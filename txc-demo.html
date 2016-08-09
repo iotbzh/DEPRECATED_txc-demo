@@ -12,32 +12,22 @@
 	var R2D = 180.0 / Math.PI;
 	var D2R = Math.PI / 180.0;
 	var ximg = null;
+	var yimg = null;
 	var gapikey = "AIzaSyBG_RlEJr2i7zqJVQijKh4jQrE-DkeHau0"
+	var mapikey = "AIzaSyD4Sbh8-imto8EO7HP3uteQl6WRJaHwVOU"
+	var minspeed = 5;
 
 	function updatePosition() {
 		if (curLat !== undefined && curLon !== undefined) {
-			if (prvLat !== undefined && prvLon !== undefined) {
+			if (prvLat !== undefined && prvLon !== undefined && vspeed >= minspeed) {
 				heading = Math.round(R2D * Math.atan2((curLon - prvLon)/Math.cos(D2R*curLat), curLat - prvLat));
 				document.getElementById("hea").innerHTML = String(heading);
-				
+				document.getElementById("car").style = "transform: rotate("+heading+"deg);";
 			}
-			if (!ximg) {
-				ximg = new Image();
-				ximg.onload = function () {
-					var x = ximg;
-					ximg = null;
-					var v = document.getElementById("view2");
-					v.replaceChild(x, v.firstChild);
-				}
-				ximg.onabort = function () {
-					ximg = null;
-				}
-				ximg.onerror = function () {
-					ximg = null;
-				}
-				ximg.crossOrigin = "anonymous";
-				ximg.src = "http://maps.googleapis.com/maps/api/streetview?key="+gapikey+"&size=480x320&location="+curLat+","+curLon+"&heading="+heading;
-			}
+
+			document.getElementById("view1").src = "http://maps.googleapis.com/maps/api/streetview?key="+gapikey+"&size=480x320&location="+curLat+","+curLon+"&heading="+heading;
+			document.getElementById("view2").src = "http://maps.googleapis.com/maps/api/staticmap?key="+mapikey+"&maptype=hybrid&zoom=18&size=480x320&center="+curLat+","+curLon;
+
 		}
 	}
 
@@ -58,11 +48,13 @@
 	function gotVehicleSpeed(obj) {
 		vspeed = Math.round(obj.data.value);
 		document.getElementById("vsp").innerHTML = String(vspeed);
+		document.getElementById("vspeed").innerHTML = String(vspeed);
 	}
 
 	function gotEngineSpeed(obj) {
 		espeed = obj.data.value;
 		document.getElementById("esp").innerHTML = String(espeed);
+		document.getElementById("espeed").innerHTML = String(espeed);
 	}
 
 	function gotStart(obj) {
@@ -110,7 +102,7 @@
 	}
     </script>
 
-<body onload="init();">
+<body onload="init();" style="background: #012; color: white;">
     <h1></h1>
     <div id="connected">Not Connected</div>
     <div id="main" style="visibility:hidden">
@@ -118,8 +110,22 @@
             <input type="button" id="start" value="start" onclick="ws.call('txc/start',{filename:'traces_nyc_downtown-crosstown.json'});"/>
             <input type="button" id="stop" value="stop" onclick="ws.call('txc/stop',true);" />
         </div>
-        <div>
-            <span id="view2"><img id="view" height="320" width="480" src="http://maps.googleapis.com/maps/api/streetview?size=480x320&location=40.77092,-73.953773&heading=0"/></span>
+        <div style="position: relative; height: 320px; width: 960px;">
+          <div style="position: absolute; top: 0px; left: 0px;">
+            <img id="view1" height="320" width="480" src="https://upload.wikimedia.org/wikipedia/commons/7/73/France_road_sign_CE.svg"/>
+            <div style="position: absolute; bottom: 25px; left: 25px;">
+              <svg height="100" width="100"> <circle cx="50" cy="50" r="49" stroke="white" stroke-width="3"/> <text x="30" y="80" fill="white">km/h</text> </svg>
+              <div id="vspeed" style="position: absolute; top: 16px; left: 0px; width: 100px; height: 100px; color: cyan; text-align: center; vertical-align: middle; font: italic bold 42px monospace;">0</div>
+            </div>
+            <div style="position: absolute; bottom: 25px; right: 25px; width: 100px; height: 100px;">
+              <svg height="100" width="100"> <circle cx="50" cy="50" r="49" stroke="white" stroke-width="3"/> <text x="30" y="80" fill="white">rpm</text> </svg>
+              <div id="espeed" style="position: absolute; top: 30px; left: 0px; width: 100px; height: 100px; color: green; text-align: center; vertical-align: middle; font: italic bold 28px monospace;">0</div>
+            </div>
+          </div>
+          <div style="position: absolute; top: 0px; left: 480px;">
+            <img id="view2" height="320" width="480" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/France_road_sign_CE26.svg"/>
+            <div style="position: absolute; top: 136px; left: 228px;"><img id="car" src="car-top-view.png"/></div>
+          </div>
         </div>
         <div>
             <div>LAT: <span id="lat">?</span> degree</div>

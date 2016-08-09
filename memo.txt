@@ -2,41 +2,41 @@
 #------------------------------------------------------------------
 # direct
 #------------------------------------------------------------------
-afb-daemon --binding txc-binding.so --port 12345 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+afb-daemon --binding txc-binding.so --port 12345 --token hello --rootdir . --verbose --verbose --ldpaths /tmp
 
 #------------------------------------------------------------------
 # indirect same process
 #------------------------------------------------------------------
-afb-daemon --binding txc-binding.so --binding ctxc-binding.so --port 12345 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+afb-daemon --binding txc-binding.so --binding ctxc-binding.so --port 12345 --token hello --rootdir . --verbose --verbose --ldpaths /tmp
 
 #------------------------------------------------------------------
 # indirect separate UNIX
 #------------------------------------------------------------------
-afb-daemon --binding txc-binding.so --ws-server unix:/tmp/txc --port 12345 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+afb-daemon --binding txc-binding.so --ws-server unix:/tmp/txc --port 12345 --token hello --rootdir . --verbose --verbose --ldpaths /tmp
 
-afb-daemon --binding ctxc-binding.so --ws-client unix:/tmp/txc --port 1234 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
-afb-daemon --binding ctxc-binding.so --ws-client unix:/tmp/txc --port 1235 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
-afb-daemon --binding ctxc-binding.so --ws-client unix:/tmp/txc --port 1236 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
-afb-daemon --binding ctxc-binding.so --ws-client unix:/tmp/txc --port 1237 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+afb-daemon --binding ctxc-binding.so --ws-client unix:/tmp/txc --port 1234 --token hello --rootdir . --verbose --verbose --ldpaths /tmp
+afb-daemon --binding ctxc-binding.so --ws-client unix:/tmp/txc --port 1235 --token hello --rootdir . --verbose --verbose --ldpaths /tmp
+afb-daemon --binding ctxc-binding.so --ws-client unix:/tmp/txc --port 1236 --token hello --rootdir . --verbose --verbose --ldpaths /tmp
+afb-daemon --binding ctxc-binding.so --ws-client unix:/tmp/txc --port 1237 --token hello --rootdir . --verbose --verbose --ldpaths /tmp
 
 
 #------------------------------------------------------------------
 # indirect separate DBUS
 #------------------------------------------------------------------
-afb-daemon --binding txc-binding.so --dbus-server txc --port 12345 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+afb-daemon --binding txc-binding.so --dbus-server txc --port 12345 --token hello --rootdir . --verbose --verbose --ldpaths /tmp
 
-afb-daemon --binding ctxc-binding.so --dbus-client txc --port 1234 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
-afb-daemon --binding ctxc-binding.so --dbus-client txc --port 1235 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
-afb-daemon --binding ctxc-binding.so --dbus-client txc --port 1236 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
-afb-daemon --binding ctxc-binding.so --dbus-client txc --port 1237 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+afb-daemon --binding ctxc-binding.so --dbus-client txc --port 1234 --token hello --rootdir . --verbose --verbose --ldpaths /tmp
+afb-daemon --binding ctxc-binding.so --dbus-client txc --port 1235 --token hello --rootdir . --verbose --verbose --ldpaths /tmp
+afb-daemon --binding ctxc-binding.so --dbus-client txc --port 1236 --token hello --rootdir . --verbose --verbose --ldpaths /tmp
+afb-daemon --binding ctxc-binding.so --dbus-client txc --port 1237 --token hello --rootdir . --verbose --verbose --ldpaths /tmp
 
 
 #------------------------------------------------------------------
 # export all
 #------------------------------------------------------------------
-afb-daemon --binding txc-binding.so --dbus-server txc --ws-server unix:/tmp/txc --binding ctxc-binding.so --port 12345 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+afb-daemon --binding txc-binding.so --dbus-server txc --ws-server unix:/tmp/txc --binding ctxc-binding.so --port 12345 --token hello --rootdir . --verbose --verbose --ldpaths /tmp
 
-
+http://localhost:12345/txc-demo.html
 
 
 #------------------------------------------------------------------
