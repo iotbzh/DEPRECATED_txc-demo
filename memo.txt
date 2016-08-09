@@ -1,0 +1,78 @@
+
+#------------------------------------------------------------------
+# direct
+#------------------------------------------------------------------
+afb-daemon --binding txc-binding.so --port 12345 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+
+#------------------------------------------------------------------
+# indirect same process
+#------------------------------------------------------------------
+afb-daemon --binding txc-binding.so --binding ctxc-binding.so --port 12345 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+
+#------------------------------------------------------------------
+# indirect separate UNIX
+#------------------------------------------------------------------
+afb-daemon --binding txc-binding.so --ws-server unix:/tmp/txc --port 12345 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+
+afb-daemon --binding ctxc-binding.so --ws-client unix:/tmp/txc --port 1234 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+afb-daemon --binding ctxc-binding.so --ws-client unix:/tmp/txc --port 1235 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+afb-daemon --binding ctxc-binding.so --ws-client unix:/tmp/txc --port 1236 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+afb-daemon --binding ctxc-binding.so --ws-client unix:/tmp/txc --port 1237 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+
+
+#------------------------------------------------------------------
+# indirect separate DBUS
+#------------------------------------------------------------------
+afb-daemon --binding txc-binding.so --dbus-server txc --port 12345 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+
+afb-daemon --binding ctxc-binding.so --dbus-client txc --port 1234 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+afb-daemon --binding ctxc-binding.so --dbus-client txc --port 1235 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+afb-daemon --binding ctxc-binding.so --dbus-client txc --port 1236 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+afb-daemon --binding ctxc-binding.so --dbus-client txc --port 1237 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+
+
+#------------------------------------------------------------------
+# export all
+#------------------------------------------------------------------
+afb-daemon --binding txc-binding.so --dbus-server txc --ws-server unix:/tmp/txc --binding ctxc-binding.so --port 12345 --token hello --rootdir ~/dev/app-framework-binder/test --verbose --verbose --ldpaths /tmp
+
+
+
+
+#------------------------------------------------------------------
+# launches the client
+#------------------------------------------------------------------
+afb-client-demo localhost:12345/api?token=hello
+
+afb-client-demo localhost:1234/api?token=hello
+afb-client-demo localhost:1235/api?token=hello
+afb-client-demo localhost:1236/api?token=hello
+afb-client-demo localhost:1237/api?token=hello
+
+#------------------------------------------------------------------
+# direct commands
+#------------------------------------------------------------------
+txc subscribe {"event":"*"}
+txc start {"filename":"traces_nyc_downtown-crosstown.json","speed":1}
+txc start {"filename":"traces_nyc_downtown-crosstown.json","speed":3}
+txc start {"filename":"traces_nyc_downtown-crosstown.json","speed":10}
+txc start {"filename":"traces_nyc_downtown-crosstown.json","speed":50}
+txc start {"filename":"traces_nyc_downtown-crosstown.json","speed":100}
+txc start {"filename":"traces_nyc_downtown-crosstown.json","speed":150}
+txc stop
+
+txc unsubscribe {"event":"*"}
+txc subscribe {"event":["START","STOP","vehicle_speed"]}
+txc subscribe {"event":["longitude","latitude"]}
+txc subscribe {"event":["vehicle_speed","engine_speed"]}
+
+#------------------------------------------------------------------
+# indirect commands
+#------------------------------------------------------------------
+
+ctxc subscribe {"event":"*"}
+ctxc subscribe {"event":["longitude","latitude"]}
+ctxc start {"filename":"traces_nyc_downtown-crosstown.json","speed":10}
+ctxc stop
+ctxc unsubscribe {"event":"*"}
+

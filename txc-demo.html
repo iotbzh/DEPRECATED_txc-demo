@@ -1,0 +1,132 @@
+<html>
+<head>
+    <title>OpenXC trace player</title>
+    <script type="text/javascript" src="AFB.js"></script>
+    <script type="text/javascript">
+	var afb = new AFB("api", "hello");
+	var ws;
+	var curLat = undefined, prvLat = undefined;
+	var curLon = undefined, prvLon = undefined;
+	var vspeed = 0, espeed = 0;
+	var heading = 0;
+	var R2D = 180.0 / Math.PI;
+	var D2R = Math.PI / 180.0;
+	var ximg = null;
+	var gapikey = "AIzaSyBG_RlEJr2i7zqJVQijKh4jQrE-DkeHau0"
+
+	function updatePosition() {
+		if (curLat !== undefined && curLon !== undefined) {
+			if (prvLat !== undefined && prvLon !== undefined) {
+				heading = Math.round(R2D * Math.atan2((curLon - prvLon)/Math.cos(D2R*curLat), curLat - prvLat));
+				document.getElementById("hea").innerHTML = String(heading);
+				
+			}
+			if (!ximg) {
+				ximg = new Image();
+				ximg.onload = function () {
+					var x = ximg;
+					ximg = null;
+					var v = document.getElementById("view2");
+					v.replaceChild(x, v.firstChild);
+				}
+				ximg.onabort = function () {
+					ximg = null;
+				}
+				ximg.onerror = function () {
+					ximg = null;
+				}
+				ximg.crossOrigin = "anonymous";
+				ximg.src = "http://maps.googleapis.com/maps/api/streetview?key="+gapikey+"&size=480x320&location="+curLat+","+curLon+"&heading="+heading;
+			}
+		}
+	}
+
+	function gotLatitude(obj) {
+		prvLat = curLat;
+		curLat = obj.data.value;
+		document.getElementById("lat").innerHTML = String(curLat);
+		updatePosition();
+	}
+
+	function gotLongitude(obj) {
+		prvLon = curLon;
+		curLon = obj.data.value;
+		document.getElementById("lon").innerHTML = String(curLon);
+		updatePosition();
+	}
+
+	function gotVehicleSpeed(obj) {
+		vspeed = Math.round(obj.data.value);
+		document.getElementById("vsp").innerHTML = String(vspeed);
+	}
+
+	function gotEngineSpeed(obj) {
+		espeed = obj.data.value;
+		document.getElementById("esp").innerHTML = String(espeed);
+	}
+
+	function gotStart(obj) {
+	}
+
+	function gotStop(obj) {
+	}
+
+	function onAbort() {
+		document.getElementById("main").style.visibility = "hidden";
+		document.getElementById("connected").innerHTML = "Connected Closed";
+	}
+	function onOpen() {
+		ws.call("txc/subscribe", {event:["longitude","latitude","vehicle_speed","engine_speed","START","STOP"]}).then(onSubscribed, onAbort);
+	}
+
+	function onSubscribed() {
+		document.getElementById("main").style.visibility = "visible";
+		document.getElementById("connected").innerHTML = "Connected to player of openXC traces";
+		ws.onevent("txc/longitude", gotLongitude);
+		ws.onevent("txc/latitude", gotLatitude);
+		ws.onevent("txc/vehicle_speed", gotVehicleSpeed);
+		ws.onevent("txc/engine_speed", gotEngineSpeed);
+		ws.onevent("txc/START", gotStart);
+		ws.onevent("txc/STOP", gotStop);
+	}
+
+	function replyok(obj) {
+		document.getElementById("output").innerHTML = "OK: "+JSON.stringify(obj);
+	}
+	function replyerr(obj) {
+		document.getElementById("output").innerHTML = "ERROR: "+JSON.stringify(obj);
+	}
+	function gotevent(obj) {
+		document.getElementById("outevt").innerHTML = JSON.stringify(obj);
+	}
+	function send(message) {
+		var api = document.getElementById("api").value;
+		var verb = document.getElementById("verb").value;
+		ws.call(api+"/"+verb, {data:message}).then(replyok, replyerr);
+	}
+
+	function init() {
+		ws = new afb.ws(onOpen, onAbort);
+	}
+    </script>
+
+<body onload="init();">
+    <h1></h1>
+    <div id="connected">Not Connected</div>
+    <div id="main" style="visibility:hidden">
+        <div>
+            <input type="button" id="start" value="start" onclick="ws.call('txc/start',{filename:'traces_nyc_downtown-crosstown.json'});"/>
+            <input type="button" id="stop" value="stop" onclick="ws.call('txc/stop',true);" />
+        </div>
+        <div>
+            <span id="view2"><img id="view" height="320" width="480" src="http://maps.googleapis.com/maps/api/streetview?size=480x320&location=40.77092,-73.953773&heading=0"/></span>
+        </div>
+        <div>
+            <div>LAT: <span id="lat">?</span> degree</div>
+            <div>LON: <span id="lon">?</span> degree</div>
+            <div>HEA: <span id="hea">?</span> degree</div>
+            <div>VSP: <span id="vsp">0</span> km/h</div>
+            <div>ESP: <span id="esp">0</span> tr/mn</div>
+        </div>
+    </div>
+
