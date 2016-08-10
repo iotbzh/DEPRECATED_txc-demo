@@ -13,48 +13,48 @@
 	var D2R = Math.PI / 180.0;
 	var ximg = null;
 	var yimg = null;
-	var gapikey = "AIzaSyBG_RlEJr2i7zqJVQijKh4jQrE-DkeHau0"
-	var mapikey = "AIzaSyD4Sbh8-imto8EO7HP3uteQl6WRJaHwVOU"
+	var gapikey = "AIzaSyBG_RlEJr2i7zqJVQijKh4jQrE-DkeHau0";
+	var mapikey = "AIzaSyD4Sbh8-imto8EO7HP3uteQl6WRJaHwVOU";
+	var src1 = "http://maps.googleapis.com/maps/api/streetview?key="+gapikey+"&size=480x320";
+	var src2 = "http://maps.googleapis.com/maps/api/staticmap?key="+mapikey+"&maptype=hybrid&zoom=18&size=480x320";
 	var minspeed = 5;
+	var wdgLat, wdgLon, wdgVsp, wdgVspeed, wdgEsp, wdgEspeed, wdgView1, wdgView2, wdgHea, wdgCar;
 
 	function updatePosition() {
 		if (curLat !== undefined && curLon !== undefined) {
 			if (prvLat !== undefined && prvLon !== undefined && vspeed >= minspeed) {
 				heading = Math.round(R2D * Math.atan2((curLon - prvLon)/Math.cos(D2R*curLat), curLat - prvLat));
-				document.getElementById("hea").innerHTML = String(heading);
-				document.getElementById("car").style = "transform: rotate("+heading+"deg);";
+				wdgHea.innerHTML = String(heading);
+				wdgCar.style = "transform: rotate("+heading+"deg);";
 			}
 
-			document.getElementById("view1").src = "http://maps.googleapis.com/maps/api/streetview?key="+gapikey+"&size=480x320&location="+curLat+","+curLon+"&heading="+heading;
-			document.getElementById("view2").src = "http://maps.googleapis.com/maps/api/staticmap?key="+mapikey+"&maptype=hybrid&zoom=18&size=480x320&center="+curLat+","+curLon;
-
+			wdgView1.src = src1+"&location="+curLat+","+curLon+"&heading="+heading;
+			wdgView2.src = src2+"&center="+curLat+","+curLon;
 		}
 	}
 
 	function gotLatitude(obj) {
 		prvLat = curLat;
 		curLat = obj.data.value;
-		document.getElementById("lat").innerHTML = String(curLat);
+		wdgLat.innerHTML = String(curLat);
 		updatePosition();
 	}
 
 	function gotLongitude(obj) {
 		prvLon = curLon;
 		curLon = obj.data.value;
-		document.getElementById("lon").innerHTML = String(curLon);
+		wdgLon.innerHTML = String(curLon);
 		updatePosition();
 	}
 
 	function gotVehicleSpeed(obj) {
 		vspeed = Math.round(obj.data.value);
-		document.getElementById("vsp").innerHTML = String(vspeed);
-		document.getElementById("vspeed").innerHTML = String(vspeed);
+		wdgVsp.innerHTML = wdgVspeed.innerHTML = String(vspeed);
 	}
 
 	function gotEngineSpeed(obj) {
 		espeed = Math.round(obj.data.value);
-		document.getElementById("esp").innerHTML = String(espeed);
-		document.getElementById("espeed").innerHTML = String(espeed);
+		wdgEsp.innerHTML = wdgEspeed.innerHTML = String(espeed);
 	}
 
 	function gotStart(obj) {
@@ -88,9 +88,6 @@
 	function replyerr(obj) {
 		document.getElementById("output").innerHTML = "ERROR: "+JSON.stringify(obj);
 	}
-	function gotevent(obj) {
-		document.getElementById("outevt").innerHTML = JSON.stringify(obj);
-	}
 	function send(message) {
 		var api = document.getElementById("api").value;
 		var verb = document.getElementById("verb").value;
@@ -98,11 +95,6 @@
 	}
 
 	function doStart(fname) {
-		var x = [
-			'nyc-downtown-crosstown.json',
-			'nyc-uptown-west.json',
-			'localwithgps.json'
-		];
 		ws.call('txc/start',{filename: fname});
 	}
 
@@ -111,6 +103,16 @@
 	}
 
 	function init() {
+		wdgLat = document.getElementById("lat");
+		wdgLon = document.getElementById("lon");
+		wdgVsp = document.getElementById("vsp");
+		wdgVspeed = document.getElementById("vspeed");
+		wdgEsp = document.getElementById("esp");
+		wdgEspeed = document.getElementById("espeed");
+		wdgView1 = document.getElementById("view1");
+		wdgView2 = document.getElementById("view2");
+		wdgHea = document.getElementById("hea");
+		wdgCar = document.getElementById("car");
 		ws = new afb.ws(onOpen, onAbort);
 	}
     </script>
