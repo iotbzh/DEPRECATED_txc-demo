@@ -2,8 +2,8 @@
 
 export LANG=
 
-infile=traces_nyc_downtown-crosstown.json
-outfile=traces_nyc_downtown-crosstown.txt
+infile=nyc-downtown-crosstown.json
+outfile=nyc-downtown-crosstown.txt
 
 cat $infile |
 tr '{":,}' ' ' |
