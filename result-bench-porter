@@ -1,0 +1,194 @@
+RESULT of "bench.sh" on porter board 
+
+The file nyc-downtown-crosstown.json:
+
+    duration: 2237 sec = 37 mn 17 s
+      events: 947 521
+        size: 68 664 550 bytes = 68 Mb
+  event rate: 423.6 event/s (avg)
+   byte rate: 30 694.9 byte/s (avg)
+
+AVERAGE RATES for nyc-downtown-crosstown.json
+
+speed      ev/s        kb/s
+
+1         423.6        30.7
+10      4 235.6       306.9
+20      8 471.3       613.9
+30     12 707.0       920.8
+40     16 942.7     1 227.8
+50     21 178.3     1 534.7
+60     25 414.0     1 841.7
+70     29 649.7     2 148.6
+
+----------------------------------------------------------
+time to read the trace file
+	Command being timed: "cat nyc-downtown-crosstown.json"
+	User time (seconds): 0.00
+	System time (seconds): 0.09
+	Percent of CPU this job got: 95%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0m 0.09s
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 2048
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 166
+	Voluntary context switches: 1
+	Involuntary context switches: 1
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+----------------------------------------------------------
+time to read+scan the trace file
+	Command being timed: "./txc-parse-only nyc-downtown-crosstown.json"
+	User time (seconds): 15.43
+	System time (seconds): 0.17
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0m 15.60s
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 2304
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 160
+	Voluntary context switches: 1
+	Involuntary context switches: 47
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+----------------------------------------------------------
+time to read+scan+print the trace file
+	Command being timed: "./txc-parse-print nyc-downtown-crosstown.json"
+	User time (seconds): 22.22
+	System time (seconds): 0.16
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0m 22.38s
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 2448
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 169
+	Voluntary context switches: 1
+	Involuntary context switches: 50
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+----------------------------------------------------------
+time to play the trace file
+	Command being timed: "./txc-play nyc-downtown-crosstown.json"
+	User time (seconds): 22.58
+	System time (seconds): 0.19
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0m 22.78s
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 2464
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 170
+	Voluntary context switches: 1
+	Involuntary context switches: 50
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+----------------------------------------------------------
+time to play at speed the trace file
+	Command being timed: "./txc-play-speed nyc-downtown-crosstown.json"
+	User time (seconds): 28.11
+	System time (seconds): 0.21
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0m 28.32s
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 2544
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 175
+	Voluntary context switches: 1
+	Involuntary context switches: 62
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+------------------------------------------------------------
+Mesuring txc/ctxc in same process: using top
+
+file nyc-downtown-crosstown.json
+speed   %CPU
+1       1.3..1.7
+5       6.0..8.3
+10      15.2..18.0
+20      24.5..26.5
+30      39.7..40.4
+40      53.0..54.0
+50      66..68
+55      73.3..74.5
+60      80.8..81.1
+75      80.8..81.1
+100     80.8..81.1
+200     80.8..81.1
+
+------------------------------------------------------------
+Mesuring txc/ctxc connected with UDS/WS: using top
+
+file nyc-downtown-crosstown.json
+speed   %CPU-txc    %CPU-ctxc
+1           2.6         2.6
+10         24.8        23.5
+20         47.8        46.5
+30         70.1        70.1
+40         84          84
+50         84          84
+
+------------------------------------------------------------
+Mesuring txc/ctxc connected with DBUS: using top
+
+file nyc-downtown-crosstown.json
+speed   %CPU-txc    %CPU-ctxc   %CPU-dbus  %CPU-cynara
+1           3.6         3.6         5.6
+5          16          18          27
+10         31          34          51
+15         45          47          70
+20         50          50          82       ****** falls into errors (disconnected?) *******
+
