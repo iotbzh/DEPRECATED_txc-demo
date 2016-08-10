@@ -1,6 +1,5 @@
 ctxc-binding.so
 push-car-evt.c
-traces_nyc_downtown-crosstown.json
 txc-binding.so
 txc-parse-only
 txc-parse-print

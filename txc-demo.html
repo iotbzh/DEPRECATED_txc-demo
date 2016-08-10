@@ -52,7 +52,7 @@
 	}
 
 	function gotEngineSpeed(obj) {
-		espeed = obj.data.value;
+		espeed = Math.round(obj.data.value);
 		document.getElementById("esp").innerHTML = String(espeed);
 		document.getElementById("espeed").innerHTML = String(espeed);
 	}
@@ -97,6 +97,19 @@
 		ws.call(api+"/"+verb, {data:message}).then(replyok, replyerr);
 	}
 
+	function doStart(fname) {
+		var x = [
+			'nyc-downtown-crosstown.json',
+			'nyc-uptown-west.json',
+			'localwithgps.json'
+		];
+		ws.call('txc/start',{filename: fname});
+	}
+
+	function doStop() {
+		ws.call('txc/stop',true);
+	}
+
 	function init() {
 		ws = new afb.ws(onOpen, onAbort);
 	}
@@ -107,8 +120,16 @@
     <div id="connected">Not Connected</div>
     <div id="main" style="visibility:hidden">
         <div>
-            <input type="button" id="start" value="start" onclick="ws.call('txc/start',{filename:'traces_nyc_downtown-crosstown.json'});"/>
-            <input type="button" id="stop" value="stop" onclick="ws.call('txc/stop',true);" />
+            <input type="button" value="start NYC: Downtown, Crosstown" onclick="doStart('nyc-downtown-crosstown.json');"/>
+        </div>
+        <div>
+            <input type="button" value="start NYC: West Uptown" onclick="doStart('nyc-uptown-west.json');"/>
+        </div>
+        <div>
+            <input type="button" value="start Highway Commute and Local Stop" onclick="doStart('localwithgps.json');"/>
+        </div>
+        <div>
+            <input type="button" value="stop" onclick="doStop();" />
         </div>
         <div style="position: relative; height: 320px; width: 960px;">
           <div style="position: absolute; top: 0px; left: 0px;">
