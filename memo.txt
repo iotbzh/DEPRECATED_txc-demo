@@ -69,6 +69,7 @@ txc start {"filename":"nyc-downtown-crosstown.json","speed":150}
 txc stop
 
 txc unsubscribe {"event":"*"}
+txc subscribe {"event":["START","STOP"]}
 txc subscribe {"event":["START","STOP","vehicle_speed"]}
 txc subscribe {"event":["longitude","latitude"]}
 txc subscribe {"event":["vehicle_speed","engine_speed"]}

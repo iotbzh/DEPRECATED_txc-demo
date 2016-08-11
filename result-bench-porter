@@ -174,10 +174,11 @@ Mesuring txc/ctxc connected with UDS/WS: using top
 
 file nyc-downtown-crosstown.json
 speed   %CPU-txc    %CPU-ctxc
-1           2.6         2.6
-10         24.8        23.5
-20         47.8        46.5
-30         70.1        70.1
+1           2.4         1.7
+10         24          25
+20         46          47
+30         68          70
+35         78          80
 40         84          84
 50         84          84
 
@@ -186,11 +187,11 @@ Mesuring txc/ctxc connected with DBUS: using top
 
 file nyc-downtown-crosstown.json
 speed   %CPU-txc    %CPU-ctxc   %CPU-dbus
-1           3.6         3.6         5.6
-5          16          18          27
+1           3.5         3.6         5.6
+5          17          18          27
 10         31          34          51
 15         45          47          70
-20         50          50          82       ****** falls into errors (disconnected?) *******
+20       ****** quickly falls into errors *******
 
 ------------------------------------------------------------
 Mesuring txc/3 ctxc connected with DBUS: using top

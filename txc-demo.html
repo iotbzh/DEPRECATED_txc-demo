@@ -68,7 +68,13 @@
 		document.getElementById("connected").innerHTML = "Connected Closed";
 	}
 	function onOpen() {
-		ws.call("txc/subscribe", {event:["longitude","latitude","vehicle_speed","engine_speed","START","STOP"]}).then(onSubscribed, onAbort);
+		ws.call("txc/subscribe", {event:[
+				"longitude",
+				"latitude",
+				"vehicle_speed",
+				"engine_speed",
+				"START",
+				"STOP"]}).then(onSubscribed, onAbort);
 	}
 
 	function onSubscribed() {
