@@ -2,131 +2,41 @@
 <head>
     <title>OpenXC trace player</title>
     <script type="text/javascript" src="AFB.js"></script>
-    <script type="text/javascript">
-	var afb = new AFB("api", "hello");
-	var ws;
-	var curLat = undefined, prvLat = undefined;
-	var curLon = undefined, prvLon = undefined;
-	var vspeed = 0, espeed = 0;
-	var heading = 0;
-	var R2D = 180.0 / Math.PI;
-	var D2R = Math.PI / 180.0;
-	var ximg = null;
-	var yimg = null;
-	var gapikey = "AIzaSyBG_RlEJr2i7zqJVQijKh4jQrE-DkeHau0";
-	var mapikey = "AIzaSyD4Sbh8-imto8EO7HP3uteQl6WRJaHwVOU";
-	var src1 = "http://maps.googleapis.com/maps/api/streetview?key="+gapikey+"&size=480x320";
-	var src2 = "http://maps.googleapis.com/maps/api/staticmap?key="+mapikey+"&maptype=hybrid&zoom=18&size=480x320";
-	var minspeed = 5;
-	var wdgLat, wdgLon, wdgVsp, wdgVspeed, wdgEsp, wdgEspeed, wdgView1, wdgView2, wdgHea, wdgCar;
-
-	function updatePosition() {
-		if (curLat !== undefined && curLon !== undefined) {
-			if (prvLat !== undefined && prvLon !== undefined && vspeed >= minspeed) {
-				heading = Math.round(R2D * Math.atan2((curLon - prvLon)/Math.cos(D2R*curLat), curLat - prvLat));
-				wdgHea.innerHTML = String(heading);
-				wdgCar.style = "transform: rotate("+heading+"deg);";
-			}
-
-			wdgView1.src = src1+"&location="+curLat+","+curLon+"&heading="+heading;
-			wdgView2.src = src2+"&center="+curLat+","+curLon;
-		}
-	}
-
-	function gotLatitude(obj) {
-		prvLat = curLat;
-		curLat = obj.data.value;
-		wdgLat.innerHTML = String(curLat);
-		updatePosition();
-	}
-
-	function gotLongitude(obj) {
-		prvLon = curLon;
-		curLon = obj.data.value;
-		wdgLon.innerHTML = String(curLon);
-		updatePosition();
-	}
-
-	function gotVehicleSpeed(obj) {
-		vspeed = Math.round(obj.data.value);
-		wdgVsp.innerHTML = wdgVspeed.innerHTML = String(vspeed);
-	}
-
-	function gotEngineSpeed(obj) {
-		espeed = Math.round(obj.data.value);
-		wdgEsp.innerHTML = wdgEspeed.innerHTML = String(espeed);
-	}
-
-	function gotStart(obj) {
-	}
-
-	function gotStop(obj) {
-	}
-
-	function onAbort() {
-		document.getElementById("main").style.visibility = "hidden";
-		document.getElementById("connected").innerHTML = "Connected Closed";
-	}
-	function onOpen() {
-		ws.call("txc/subscribe", {event:[
-				"longitude",
-				"latitude",
-				"vehicle_speed",
-				"engine_speed",
-				"START",
-				"STOP"]}).then(onSubscribed, onAbort);
-	}
-
-	function onSubscribed() {
-		document.getElementById("main").style.visibility = "visible";
-		document.getElementById("connected").innerHTML = "Connected to player of openXC traces";
-		ws.onevent("txc/longitude", gotLongitude);
-		ws.onevent("txc/latitude", gotLatitude);
-		ws.onevent("txc/vehicle_speed", gotVehicleSpeed);
-		ws.onevent("txc/engine_speed", gotEngineSpeed);
-		ws.onevent("txc/START", gotStart);
-		ws.onevent("txc/STOP", gotStop);
-	}
-
-	function replyok(obj) {
-		document.getElementById("output").innerHTML = "OK: "+JSON.stringify(obj);
-	}
-	function replyerr(obj) {
-		document.getElementById("output").innerHTML = "ERROR: "+JSON.stringify(obj);
-	}
-	function send(message) {
-		var api = document.getElementById("api").value;
-		var verb = document.getElementById("verb").value;
-		ws.call(api+"/"+verb, {data:message}).then(replyok, replyerr);
-	}
-
-	function doStart(fname) {
-		ws.call('txc/start',{filename: fname});
-	}
-
-	function doStop() {
-		ws.call('txc/stop',true);
-	}
-
-	function init() {
-		wdgLat = document.getElementById("lat");
-		wdgLon = document.getElementById("lon");
-		wdgVsp = document.getElementById("vsp");
-		wdgVspeed = document.getElementById("vspeed");
-		wdgEsp = document.getElementById("esp");
-		wdgEspeed = document.getElementById("espeed");
-		wdgView1 = document.getElementById("view1");
-		wdgView2 = document.getElementById("view2");
-		wdgHea = document.getElementById("hea");
-		wdgCar = document.getElementById("car");
-		ws = new afb.ws(onOpen, onAbort);
-	}
-    </script>
-
+    <script type="text/javascript" src="txc-demo.js"></script>
+    <style type="text/css">
+	#panels { position: relative; height: 320px; width: 960px; }
+	#panel1 { position: absolute; top: 0px; left: 0px; }
+	#panel2 { position: absolute; top: 0px; right: 0px; }
+	#view1 { height: 320px; width: 480px; }
+	#view2 { height: 320px; width: 480px; }
+	.number { text-align: center; vertical-align: middle; font: italic bold 12px monospace; }
+	#espan { position: absolute; bottom: 25px; left: 25px; }
+	#espeed { position: absolute; top: 30px; left: 0px; width: 100px; height: 100px; color: green; font-size: 28px; }
+	#vspan { position: absolute; bottom: 25px; right: 25px; width: 100px; height: 100px; }
+	#vspeed { position: absolute; top: 16px; left: 0px; width: 100px; height: 100px; color: cyan; font-size: 42px; }
+	#car { position: absolute; top: 136px; left: 228px; }
+        #gas { position: absolute; bottom: 25px; right: 25px; width: 69px; height: 92px; }
+        #gas div { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; overflow: hidden; }
+	#gpblack { background: url(gas-pump-black.png); }
+	#gpgreen { background: url(gas-pump-green.png); }
+	#gpred { background: url(gas-pump-red.png); visibility: hidden; }
+        #copan { position: absolute; bottom: 25px; left: 25px; background: rgba(255,255,255,.3); padding: 5px; }
+	#copan div { position: relative; width: 300px; height: 50px; color: black; font-size: 10px; }
+	#copan div div { position: absolute; top: 0px; width: 10%; background: yellow; height: 0%; border: 1px solid grey; text-align: center; }
+        #con1 { left: 0%; }
+        #con2 { left: 11%; }
+        #con3 { left: 22%; }
+        #con4 { left: 33%; }
+        #con5 { left: 44%; }
+        #con6 { left: 55%; }
+        #con7 { left: 66%; }
+        #con8 { left: 77%; }
+        #con9 { left: 88%; }
+    </style>
 <body onload="init();" style="background: #012; color: white;">
     <h1></h1>
     <div id="connected">Not Connected</div>
-    <div id="main" style="visibility:hidden">
+    <div id="main" style="visibility: hidden;">
         <div>
             <input type="button" value="start NYC: Downtown, Crosstown" onclick="doStart('nyc-downtown-crosstown.json');"/>
         </div>
@@ -139,29 +49,51 @@
         <div>
             <input type="button" value="stop" onclick="doStop();" />
         </div>
-        <div style="position: relative; height: 320px; width: 960px;">
-          <div style="position: absolute; top: 0px; left: 0px;">
-            <img id="view1" height="320" width="480" src="https://upload.wikimedia.org/wikipedia/commons/7/73/France_road_sign_CE.svg"/>
-            <div style="position: absolute; bottom: 25px; left: 25px;">
+        <div id="panels">
+          <div id="panel1">
+            <img id="view1" src="https://upload.wikimedia.org/wikipedia/commons/7/73/France_road_sign_CE.svg"/>
+            <div id="vspan">
               <svg height="100" width="100"> <circle cx="50" cy="50" r="49" stroke="white" stroke-width="3"/> <text x="30" y="80" fill="white">km/h</text> </svg>
-              <div id="vspeed" style="position: absolute; top: 16px; left: 0px; width: 100px; height: 100px; color: cyan; text-align: center; vertical-align: middle; font: italic bold 42px monospace;">0</div>
+              <div id="vspeed" class="number">0</div>
             </div>
-            <div style="position: absolute; bottom: 25px; right: 25px; width: 100px; height: 100px;">
+            <div id="espan">
               <svg height="100" width="100"> <circle cx="50" cy="50" r="49" stroke="white" stroke-width="3"/> <text x="30" y="80" fill="white">rpm</text> </svg>
-              <div id="espeed" style="position: absolute; top: 30px; left: 0px; width: 100px; height: 100px; color: green; text-align: center; vertical-align: middle; font: italic bold 28px monospace;">0</div>
+              <div id="espeed" class="number">0</div>
             </div>
           </div>
-          <div style="position: absolute; top: 0px; left: 480px;">
-            <img id="view2" height="320" width="480" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/France_road_sign_CE26.svg"/>
-            <div style="position: absolute; top: 136px; left: 228px;"><img id="car" src="car-top-view.png"/></div>
+          <div id="panel2">
+            <img id="view2" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/France_road_sign_CE26.svg"/>
+            <img id="car" src="car-top-view.png"/>
+            <div id="copan">
+             <div>
+              <div id="con1"></div>
+              <div id="con2"></div>
+              <div id="con3"></div>
+              <div id="con4"></div>
+              <div id="con5"></div>
+              <div id="con6"></div>
+              <div id="con7"></div>
+              <div id="con8"></div>
+              <div id="con9"></div>
+             </div>
+            </div>
+            <div id="gas">
+              <div id="gpgreen"></div>
+              <div id="gpblack"></div>
+              <div id="gpred"></div>
+            </div>
           </div>
         </div>
         <div>
             <div>LAT: <span id="lat">?</span> degree</div>
             <div>LON: <span id="lon">?</span> degree</div>
             <div>HEA: <span id="hea">?</span> degree</div>
-            <div>VSP: <span id="vsp">0</span> km/h</div>
-            <div>ESP: <span id="esp">0</span> tr/mn</div>
+            <div>VSP: <span id="vsp">?</span> km/h</div>
+            <div>ESP: <span id="esp">?</span> tr/mn</div>
+            <div>FUE: <span id="fue">?</span> %</div>
+            <div>ODO: <span id="odo">?</span> km</div>
+            <div>FSR: <span id="fsr">?</span> L</div>
+            <div>CON: <span id="con">?</span> L/100km</div>
         </div>
     </div>
 
