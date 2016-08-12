@@ -7,8 +7,6 @@ var vspeed = 0, espeed = 0;
 var heading = 0;
 var R2D = 180.0 / Math.PI;
 var D2R = Math.PI / 180.0;
-var ximg = null;
-var yimg = null;
 var gapikey = "AIzaSyBG_RlEJr2i7zqJVQijKh4jQrE-DkeHau0";
 var mapikey = "AIzaSyD4Sbh8-imto8EO7HP3uteQl6WRJaHwVOU";
 var src1 = "http://maps.googleapis.com/maps/api/streetview?key="+gapikey+"&size=480x320";
@@ -50,7 +48,6 @@ function gotLongitude(obj) {
 	wdgLon.innerHTML = String(curLon);
 	updatePosition();
 }
-
 function gotVehicleSpeed(obj) {
 	vspeed = Math.round(obj.data.value);
 	wdgVsp.innerHTML = wdgVspeed.innerHTML = String(vspeed);
@@ -127,6 +124,23 @@ function gotFuelSince(obj) {
 }
 
 function gotStart(obj) {
+	curLat = undefined, prvLat = undefined;
+	curLon = undefined, prvLon = undefined;
+	vspeed = 0, espeed = 0;
+	heading = 0;
+	odoini = undefined, odo = undefined, odoprv = undefined;
+	fsrini = undefined, fsr = undefined, fsrprv = undefined;
+	cons = undefined, consa = [ ];
+
+	wdgFsr.innerHTML = wdgOdo.innerHTML = wdgCon.innerHTML = 
+	wdgLat.innerHTML = wdgLon.innerHTML =
+	wdgVsp.innerHTML = wdgVspeed.innerHTML =
+	wdgEsp.innerHTML = wdgEspeed.innerHTML =
+	wdgHea.innerHTML = wdgFue.innerHTML = "?";
+	for (var i = 0 ; i < 9 ; i++) {
+		wdgConX[i].style.height = "0%";
+		wdgConX[i].innerHTML = "";
+	}
 }
 
 function gotStop(obj) {
@@ -136,6 +150,7 @@ function onAbort() {
 	document.getElementById("main").style.visibility = "hidden";
 	document.getElementById("connected").innerHTML = "Connected Closed";
 }
+
 function onOpen() {
 	ws.call("txc/subscribe", {event:[
 			"engine_speed",
