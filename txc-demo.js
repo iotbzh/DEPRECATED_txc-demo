@@ -27,7 +27,7 @@ var condt = 60000;
 function updatePosition() {
 	if (curLat !== undefined && curLon !== undefined) {
 		if (prvLat !== undefined && prvLon !== undefined && vspeed >= minspeed) {
-			heading = Math.round(R2D * Math.atan2((curLon - prvLon)/Math.cos(D2R*curLat), curLat - prvLat));
+			heading = Math.round(R2D * Math.atan2((curLon - prvLon)*Math.cos(D2R*curLat), curLat - prvLat));
 			wdgHea.innerHTML = String(heading);
 			wdgCar.style = "transform: rotate("+heading+"deg);";
 		}
