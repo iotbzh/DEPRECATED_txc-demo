@@ -1,5 +1,5 @@
 
-var afb = new AFB("api", "hello");
+var afb = new AFB("api"/*root*/, "hello"/*token*/);
 var ws;
 var curLat = undefined, prvLat = undefined;
 var curLon = undefined, prvLon = undefined;
@@ -147,8 +147,7 @@ function gotStop(obj) {
 }
 
 function onAbort() {
-	document.getElementById("main").style.visibility = "hidden";
-	document.getElementById("connected").innerHTML = "Connected Closed";
+	document.body.className = "not-connected";
 }
 
 function onOpen() {
@@ -165,8 +164,7 @@ function onOpen() {
 }
 
 function onSubscribed() {
-	document.getElementById("main").style.visibility = "visible";
-	document.getElementById("connected").innerHTML = "Connected to player of openXC traces";
+	document.body.className = "connected";
 	ws.onevent("txc/engine_speed", gotEngineSpeed);
 	ws.onevent("txc/fuel_level", gotFuelLevel);
 	ws.onevent("txc/fuel_consumed_since_restart", gotFuelSince);
@@ -199,6 +197,7 @@ function doStop() {
 }
 
 function init() {
+	document.body.className = "connecting";
 	wdgLat = document.getElementById("lat");
 	wdgLon = document.getElementById("lon");
 	wdgVsp = document.getElementById("vsp");

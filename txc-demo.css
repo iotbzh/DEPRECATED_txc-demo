@@ -1,0 +1,37 @@
+body { background: #012; color: white; }
+#panels { position: relative; height: 320px; width: 960px; }
+#panel1 { position: absolute; top: 0px; left: 0px; }
+#panel2 { position: absolute; top: 0px; right: 0px; }
+#view1 { height: 320px; width: 480px; }
+#view2 { height: 320px; width: 480px; }
+.number { text-align: center; vertical-align: middle; font: italic bold 12px monospace; }
+#espan { position: absolute; bottom: 25px; left: 25px; }
+#espeed { position: absolute; top: 30px; left: 0px; width: 100px; height: 100px; color: green; font-size: 28px; }
+#vspan { position: absolute; bottom: 25px; right: 25px; width: 100px; height: 100px; }
+#vspeed { position: absolute; top: 16px; left: 0px; width: 100px; height: 100px; color: cyan; font-size: 42px; }
+#car { position: absolute; top: 136px; left: 228px; }
+#gas { position: absolute; bottom: 25px; right: 25px; width: 69px; height: 92px; }
+#gas div { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; overflow: hidden; }
+#gpblack { background: url(gas-pump-black.png); }
+#gpgreen { background: url(gas-pump-green.png); }
+#gpred { background: url(gas-pump-red.png); visibility: hidden; }
+#copan { position: absolute; bottom: 25px; left: 25px; background: rgba(255,255,255,.3); padding: 5px; }
+#copan div { position: relative; width: 300px; height: 50px; color: black; font-size: 10px; }
+#copan div div { position: absolute; top: 0px; width: 10%; background: yellow; height: 0%; border: 1px solid grey; text-align: center; }
+#con1 { left: 0%; }
+#con2 { left: 11%; }
+#con3 { left: 22%; }
+#con4 { left: 33%; }
+#con5 { left: 44%; }
+#con6 { left: 55%; }
+#con7 { left: 66%; }
+#con8 { left: 77%; }
+#con9 { left: 88%; }
+
+body.not-connected .if-connecting    { display: none; }
+body.not-connected .if-connected     { display: none; }
+body.connecting    .if-not-connected { display: none; }
+body.connecting    .if-connected     { display: none; }
+body.connected     .if-not-connected { display: none; }
+body.connected     .if-connecting    { display: none; }
+

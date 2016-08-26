@@ -1,31 +1,31 @@
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <title>Visualiseur de traces OpenXC</title>
+    <title>痕跡の視聴者 OpenXC</title>
     <script type="text/javascript" src="AFB.js"></script>
     <script type="text/javascript" src="txc-demo.js"></script>
     <link rel="stylesheet" type="text/css" href="txc-demo.css"/> 
 <body onload="init();" class="not-connected">
     <div class="if-not-connected">
-	<h1>Non Connecté!!</h1>
+	<h1>結ばれませんでした！!</h1>
         <p><input type="button" value="try to connect" onclick="init();"/>
     </div>
     <div class="if-connecting">
-	<h1>Connection en cours ...</h1>
+	<h1>流れ（クラスで）接続 ...</h1>
     </div>
     <div class="if-connected">
-	<h1>Connecté au visualiseur TXC \O/</h1>
+	<h1>視聴者につながれました TXC \O/</h1>
         <div>
-            <input type="button" value="Démarrer NYC: Downtown, Crosstown" onclick="doStart('nyc-downtown-crosstown.json');"/>
+            <input type="button" value="並べる NYC: Downtown, Crosstown" onclick="doStart('nyc-downtown-crosstown.json');"/>
         </div>
         <div>
-            <input type="button" value="Démarrer NYC: West Uptown" onclick="doStart('nyc-uptown-west.json');"/>
+            <input type="button" value="並べる NYC: West Uptown" onclick="doStart('nyc-uptown-west.json');"/>
         </div>
         <div>
-            <input type="button" value="Démarrer Highway Commute and Local Stop" onclick="doStart('localwithgps.json');"/>
+            <input type="button" value="並べる Highway Commute and Local Stop" onclick="doStart('localwithgps.json');"/>
         </div>
         <div>
-            <input type="button" value="Arrêter" onclick="doStop();" />
+            <input type="button" value="逮捕する" onclick="doStop();" />
         </div>
         <div id="panels">
           <div id="panel1">
