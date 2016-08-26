@@ -1,7 +1,7 @@
-ctxc-binding.so
-push-car-evt.c
-txc-binding.so
-txc-parse-only
-txc-parse-print
-txc-play
-txc-play-speed
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+.*.sw*
+node_modules
+bower_components

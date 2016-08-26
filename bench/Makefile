@@ -21,3 +21,7 @@ txc-binding.so: txc-binding.c
 ctxc-binding.so: ctxc-binding.c
 	$(CC) -O2 ctxc-binding.c -o ctxc-binding.so -fPIC -shared $$(pkg-config --cflags --libs afb-daemon)
 
+.PHONY:clean
+clean:
+	rm -f ctxc-binding.so txc-binding.so txc-play-speed txc-play txc-parse-print txc-parse-only
+

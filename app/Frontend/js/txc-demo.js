@@ -1,8 +1,8 @@
 
 var afb = new AFB("api"/*root*/, "hello"/*token*/);
 var ws;
-var curLat = undefined, prvLat = undefined;
-var curLon = undefined, prvLon = undefined;
+var curLat,prvLat;
+var curLon,prvLon;
 var vspeed = 0, espeed = 0;
 var heading = 0;
 var R2D = 180.0 / Math.PI;
@@ -12,9 +12,9 @@ var mapikey = "AIzaSyD4Sbh8-imto8EO7HP3uteQl6WRJaHwVOU";
 var src1 = "http://maps.googleapis.com/maps/api/streetview?key="+gapikey+"&size=480x320";
 var src2 = "http://maps.googleapis.com/maps/api/staticmap?key="+mapikey+"&maptype=hybrid&zoom=18&size=480x320";
 var fuel;
-var odoini = undefined, odo = undefined, odoprv = undefined;
-var fsrini = undefined, fsr = undefined, fsrprv = undefined;
-var con, cons = undefined, consa = [ ];
+var odoini,odo,odoprv;
+var fsrini,fsr,fsrprv;
+var con,cons,consa = [ ];
 var minspeed = 5;
 var wdgLat, wdgLon, wdgVsp, wdgVspeed, wdgEsp, wdgEspeed, wdgView1, wdgView2, wdgHea, wdgCar;
 var wdgFue, wdgGpred, wdgGpblack;
@@ -96,7 +96,7 @@ function updateConsumation() {
 		fsrprv = fsr;
 		cons = undefined;
 	}
-	if ((odo - odoprv) > .075 && fsr != fsrprv) {
+	if ((odo - odoprv) > 0.075 && fsr != fsrprv) {
 		con = Math.round(1000 * (fsr - fsrprv) / (odo - odoprv)) / 10;
 		wdgCon.innerHTML = con;
 		var t = Date.now();
@@ -124,13 +124,21 @@ function gotFuelSince(obj) {
 }
 
 function gotStart(obj) {
-	curLat = undefined, prvLat = undefined;
-	curLon = undefined, prvLon = undefined;
-	vspeed = 0, espeed = 0;
+	curLat = undefined;
+	prvLat = undefined;
+	curLon = undefined;
+	prvLon = undefined;
+	vspeed = 0;
+	espeed = 0;
 	heading = 0;
-	odoini = undefined, odo = undefined, odoprv = undefined;
-	fsrini = undefined, fsr = undefined, fsrprv = undefined;
-	cons = undefined, consa = [ ];
+	odoini = undefined;
+	odo = undefined;
+	odoprv = undefined;
+	fsrini = undefined;
+	fsr = undefined;
+	fsrprv = undefined;
+	cons = undefined;
+	consa = [ ];
 
 	wdgFsr.innerHTML = wdgOdo.innerHTML = wdgCon.innerHTML = 
 	wdgLat.innerHTML = wdgLon.innerHTML =
