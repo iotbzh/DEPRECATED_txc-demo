@@ -134,17 +134,15 @@ var AFB_websocket;
 		this.ws.close();
 	}
 
-	function call(method, request) {
-		return new Promise((function(resolve, reject){
-			var id, arr;
-			do {
-				id = String(this.counter = 4095 & (this.counter + 1));
-			} while (id in this.pendings);
-			this.pendings[id] = [ resolve, reject ];
-			arr = [CALL, id, method, request ];
-			if (AFB_context.token) arr.push(AFB_context.token);
-			this.ws.send(JSON.stringify(arr));
-		}).bind(this));
+	function call(method, request, onsuccess, onfailure) {
+		var id, arr;
+		do {
+			id = String(this.counter = 4095 & (this.counter + 1));
+		} while (id in this.pendings);
+		this.pendings[id] = [ onsuccess, onfailure ];
+		arr = [CALL, id, method, request ];
+		if (AFB_context.token) arr.push(AFB_context.token);
+		this.ws.send(JSON.stringify(arr));
 	}
 
 	function onevent(name, handler) {
