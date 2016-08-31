@@ -7,6 +7,7 @@
 #include <time.h>
 #include <math.h>
 #include <pthread.h>
+#include <fcntl.h>
 
 #include <json-c/json.h>
 
@@ -78,7 +79,7 @@ static void send_trace(const char *name, struct json_object *object)
 
 static void *play_traces(void *opaque)
 {
-	int len;
+	int len, fd;
 	struct json_object *args = opaque;
 	struct json_tokener *tokener = NULL;
 	struct json_object *object;
@@ -116,9 +117,15 @@ static void *play_traces(void *opaque)
 		info = "can't find filename";
 		goto end;
 	}
-	file = fopen(json_object_get_string(object), "r");
-	if (file == NULL) {
+	fd = afb_daemon_rootdir_open_locale(afbitf->daemon, json_object_get_string(object), O_RDONLY, NULL);
+	if (fd < 0) {
 		info = "can't open the file";
+		goto end;
+	}
+	file = fdopen(fd, "r");
+	if (file == NULL) {
+		close(fd);
+		info = "can't instanciate the file";
 		goto end;
 	}
 
@@ -186,6 +193,7 @@ end:
 static void start(struct afb_req request)
 {
 	struct json_object *args, *a;
+	int fd;
 	pthread_t tid;
 
 	/* check filename argument */
@@ -194,10 +202,12 @@ static void start(struct afb_req request)
 		afb_req_fail(request, "error", "argument 'filename' is missing");
 		return;
 	}
-	if (access(json_object_get_string(a), R_OK) != 0) {
+	fd = afb_daemon_rootdir_open_locale(afbitf->daemon, json_object_get_string(a), O_RDONLY, NULL);
+	if (fd < 0) {
 		afb_req_fail(request, "error", "argument 'filename' is not a readable file");
 		return;
 	}
+	close(fd);
 
 	/* check speed argument */
 	if (json_object_object_get_ex(args, "speed", &a)) {
