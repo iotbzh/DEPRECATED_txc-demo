@@ -79,6 +79,7 @@ add_custom_command(
 	COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && gulp widget-config-prod && cp -a dist.prod ${CMAKE_CURRENT_BINARY_DIR}/package/htdocs
 	COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_ICON} package/icon.png
 	COMMAND mv package/htdocs/config.xml package/
+	COMMAND cp -a ${CMAKE_CURRENT_SOURCE_DIR}/data package/
 	COMMAND cp *.so package/${PROJECT_LIBDIR}
 	COMMAND wgtpkg-pack -f -o ${PROJECT_NAME}.wgt package 
 )
@@ -91,6 +92,7 @@ add_custom_command(
 	COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && gulp widget-config-dev && cp -a dist.dev ${CMAKE_CURRENT_BINARY_DIR}/package/htdocs
 	COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_ICON} package/icon.png
 	COMMAND mv package/htdocs/config.xml package/
+	COMMAND cp -a ${CMAKE_CURRENT_SOURCE_DIR}/data package/
 	COMMAND cp *.so package/${PROJECT_LIBDIR}
 	COMMAND wgtpkg-pack -f -o ${PROJECT_NAME}-devel.wgt package 
 )

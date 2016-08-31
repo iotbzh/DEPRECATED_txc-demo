@@ -6,7 +6,7 @@ location.search.substr(1).split("&").forEach(function(item) {
 	if (k in urlParams) urlParams[k].push(v); else urlParams[k] = [v];
 });
 
-var afb = new AFB("api"/*root*/, urlParams.token);
+var afb = new AFB("api"/*root*/, urlParams.token[0]);
 var ws;
 var curLat,prvLat;
 var curLon,prvLon;
@@ -28,6 +28,8 @@ var wdgFue, wdgGpred, wdgGpblack;
 var wdgOdo, wdgFsr, wdgCon, wdgConX;
 var conscale = 15;
 var condt = 60000;
+
+var map = L.map('view2').setView([51.505, -0.09], 13);
 
 function updatePosition() {
 	if (curLat !== undefined && curLon !== undefined) {
