@@ -21,7 +21,8 @@ var SESSION_TIMEOUT= 3600000; // default is 1h loggin session
 // Default config will be superseaded by ProjectRoot/.config-l4a.js $HOME/.config-l4a.js /etc/default/config-l4a.js
 config = {
         
-    APPNAME : 'txc-demo',// AppName is use as main Angular Module name
+    APPNAME : 'txc-demo',	 // Application name, specified in config.xml
+    APPVER  : '0.1',		 // version (config.xml)
     FRONTEND: "Frontend",    // HTML5 frontend  [no leading ./]
     BACKEND : "Backend",     // NodeJS Rest API [no leading ./]
     URLBASE : '/',           // HTML basedir when running in production [should end with a /]

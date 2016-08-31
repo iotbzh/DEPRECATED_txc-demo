@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<widget xmlns="http://www.w3.org/ns/widgets" id="txc-demo" version="0.1">
+<widget xmlns="http://www.w3.org/ns/widgets" id="@@APPNAME@@" version="@@APPVER@@">
   <name>App Framework - @@APPNAME@@</name>
   <icon src="icon.png"/>
   <content src="@@CONTENT@@" type="application/vnd.agl.html.hybrid"/>

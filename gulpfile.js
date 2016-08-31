@@ -13,6 +13,7 @@ var taskListing = require('gulp-task-listing');
 var symlink = require('gulp-sym');
 var rename = require("gulp-rename");
 var exec = require('child_process').exec
+var argv = require('yargs').argv;
 
 // == PATH STRINGS ========
 var appdir  = "./app/";   // Warning to not forget trailling '/'
@@ -58,6 +59,7 @@ pipes.minifiedFileName = function() {
 pipes.validatedAppScripts = function() {
     return gulp.src(paths.scripts)
         .pipe(plugins.replace('@@APPNAME@@', config.APPNAME))
+        .pipe(plugins.replace('@@APPVER@@', config.APPVER))
         .pipe(plugins.jshint())
         .pipe(plugins.jshint.reporter('jshint-stylish'));
 };
@@ -194,6 +196,7 @@ pipes.createProdSymLink = function() {
 pipes.validatedIndex = function() {
     return gulp.src(paths.index)       
         .pipe(plugins.replace('@@APPNAME@@', config.APPNAME))
+        .pipe(plugins.replace('@@APPVER@@', config.APPVER))
         .pipe(plugins.replace('@@URLBASE@@', config.URLBASE))
         .pipe(plugins.htmlhint())
         .pipe(plugins.htmlhint.reporter());
@@ -251,6 +254,7 @@ pipes.widgetConfig = function(type) {
 	content=content.replace(/\/+/g,"/"); 
 	return gulp.src(paths.wgtconfig+".in")
         .pipe(plugins.replace('@@APPNAME@@', config.APPNAME))
+        .pipe(plugins.replace('@@APPVER@@', config.APPVER))
         .pipe(plugins.replace('@@CONTENT@@', content))
         .pipe(plugins.rename("config.xml"))
 		.pipe(gulp.dest(dst))
@@ -346,36 +350,56 @@ gulp.task('clean-build-app-dev', ['clean-dev'], pipes.builtAppDev);
 // cleans and builds a complete prod environment
 gulp.task('clean-build-app-prod', ['clean-prod'], pipes.builtAppProd);
 
+pipes.doRsync=function(type) {
+	var dst=paths["dist"+type];
+	if (!argv.host) return plugins.empty();
+
+	return plugins.rsync({
+		root: dst+"/",
+		hostname: argv.host,
+		username: "root",
+		destination: "/usr/share/afm/applications/"+config.APPNAME+"/"+config.APPVER+"/htdocs/",
+		archive: true,
+		compress: true,
+		recursive: true
+	});
+}
+
 // clean, build, and watch live changes to the dev environment
 gulp.task('watch-dev', ['clean-build-app-dev'], function() {
 
     // watch index
     gulp.watch(paths.index, function() {
         return pipes.builtIndexDev()
+			.pipe(pipes.doRsync("Dev"))
             .pipe(plugins.livereload());
     });
 
     // watch app scripts
     gulp.watch(paths.scripts, function() {
         return pipes.builtAppScriptsDev()
+			.pipe(pipes.doRsync("Dev"))
             .pipe(plugins.livereload());
     });
 
     // watch html partials
     gulp.watch(paths.partials, function() {
         return pipes.builtPartialsDev()
+			.pipe(pipes.doRsync("Dev"))
             .pipe(plugins.livereload());
     });
     
     // watch Images
     gulp.watch(paths.images, function() {
         return pipes.processedImagesDev()
+			.pipe(pipes.doRsync("Dev"))
             .pipe(plugins.livereload());
     });
 
     // watch styles
     gulp.watch(paths.appStyles, function() {
         return pipes.builtAppStylesDev()
+			.pipe(pipes.doRsync("Dev"))
             .pipe(plugins.livereload());
     });
 
@@ -387,30 +411,35 @@ gulp.task('watch-prod', ['clean-build-app-prod'], function() {
     // watch index
     gulp.watch(paths.index, function() {
         return pipes.builtIndexProd()
+			.pipe(pipes.doRsync("Prod"))
             .pipe(plugins.livereload());
     });
 
     // watch app scripts
     gulp.watch(paths.scripts, function() {
         return pipes.builtAppScriptsProd()
+			.pipe(pipes.doRsync("Prod"))
             .pipe(plugins.livereload());
     });
 
     // watch hhtml partials
     gulp.watch(paths.partials, function() {
         return pipes.builtAppScriptsProd()
+			.pipe(pipes.doRsync("Prod"))
             .pipe(plugins.livereload());
     });
     
     // watch Images
     gulp.watch(paths.images, function() {
         return pipes.processedImagesProd()
+			.pipe(pipes.doRsync("Prod"))
             .pipe(plugins.livereload());
     });
 
     // watch styles
     gulp.watch(paths.appStyles, function() {
         return pipes.builtAppStylesProd()
+			.pipe(pipes.doRsync("Prod"))
             .pipe(plugins.livereload());
     });
     

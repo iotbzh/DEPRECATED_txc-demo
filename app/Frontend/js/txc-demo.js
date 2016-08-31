@@ -1,5 +1,12 @@
+// parse location to get security token
+var urlParams={};
+location.search.substr(1).split("&").forEach(function(item) {
+	var k = item.split("=")[0];
+	var v = decodeURIComponent(item.split("=")[1]); 
+	if (k in urlParams) urlParams[k].push(v); else urlParams[k] = [v];
+});
 
-var afb = new AFB("api"/*root*/, "hello"/*token*/);
+var afb = new AFB("api"/*root*/, urlParams.token);
 var ws;
 var curLat,prvLat;
 var curLon,prvLon;
@@ -33,7 +40,7 @@ function updatePosition() {
 		wdgView1.src = src1+"&location="+curLat+","+curLon+"&heading="+heading;
 		wdgView2.src = src2+"&center="+curLat+","+curLon;
 	}
-}
+} 
 
 function gotLatitude(obj) {
 	prvLat = curLat;
