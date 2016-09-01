@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html lang="en" ng-app="@@APPNAME@@" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html lang="en" ng-app="@@APPNAME@@" class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html lang="en" ng-app="@@APPNAME@@" class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html lang="en" ng-app="@@APPNAME@@" class="no-js"> <!--<![endif]-->
+<!--[if lt IE 7]>      <html lang="en" ng-app="@@APPNAME@@" class="full no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="@@APPNAME@@" class="full no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="@@APPNAME@@" class="full no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="@@APPNAME@@" class="full no-js"> <!--<![endif]-->
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <title>OpenXC trace player</title>
@@ -21,76 +21,100 @@
 	<!-- endinject -->
 </head>
 <body onload="init();" class="not-connected">
-    <div class="if-not-connected">
-		<h1>Not Connected !!</h1>
-		<h2>Check your token</h2>
-        <p><input type="button" value="try to connect" onclick="init();"/></p>
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				OpenXC Trace Player
+                <ul class="nav navbar-nav">
+					<li class="if-not-connected">
+                        <a onclick="init();">Connect</a>
+                    </li>
+					<li class="if-connecting">
+                        <a onclick="doStop();">Connecting...</a>
+                    </li>
+					<li class="dropdown if-connected">
+						<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Start OpenXC Trace<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a onclick="doStart('data/nyc-downtown-crosstown.json');">NYC Downtown/Crosstown</a></li>
+							<li><a onclick="doStart('data/nyc-uptown-west.json');">NYC West Uptown</a></li>
+							<li><a onclick="doStart('data/localwithgps.json');">Highway Commute</a></li>
+						</ul>
+					</li>
+					<li class="if-started">
+						<a onclick="doStop()">Stop</a>
+					</li>
+				</ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <div class="content">
+		<div id="panel1" class="col-md-6 quarter red">
+			<h1>1</h1>
+			<img id="view1" src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Ireland_road_sign_RUS_027.svg"/>
+			<div id="vspan">
+				<svg height="100" width="100"> <circle cx="50" cy="50" r="49" stroke="white" stroke-width="3"/> <text x="30" y="80" fill="white">km/h</text> </svg>
+				<div id="vspeed" class="number">0</div>
+			</div>
+			<div id="espan">
+				<svg height="100" width="100"> <circle cx="50" cy="50" r="49" stroke="white" stroke-width="3"/> <text x="30" y="80" fill="white">rpm</text> </svg>
+				<div id="espeed" class="number">0</div>
+			</div>
+		</div>
+
+		<div id="panel2" class="col-md-6 quarter green">
+			<h1>2</h1>
+			<img id="view2" src="https://upload.wikimedia.org/wikipedia/commons/b/bb/Information_road_sign_parking.svg"/>
+			<img id="car" src="images/car-top-view.png"/>
+			<div id="copan">
+				<div>
+					<div id="con1"></div>
+					<div id="con2"></div>
+					<div id="con3"></div>
+					<div id="con4"></div>
+					<div id="con5"></div>
+					<div id="con6"></div>
+					<div id="con7"></div>
+					<div id="con8"></div>
+					<div id="con9"></div>
+				</div>
+			</div>
+			<div id="gas">
+				<div id="gpgreen"></div>
+				<div id="gpblack"></div>
+				<div id="gpred"></div>
+			</div>
+		</div>
+        
+		<div id="panel3" class="col-md-6 quarter blue">
+			<h1>3</h1>
+			<div>LAT: <span id="lat">?</span> degree</div>
+			<div>LON: <span id="lon">?</span> degree</div>
+			<div>HEA: <span id="hea">?</span> degree</div>
+			<div>VSP: <span id="vsp">?</span> km/h</div>
+			<div>ESP: <span id="esp">?</span> tr/mn</div>
+			<div>FUE: <span id="fue">?</span> %</div>
+			<div>ODO: <span id="odo">?</span> km</div>
+			<div>FSR: <span id="fsr">?</span> L</div>
+			<div>CON: <span id="con">?</span> L/100km</div>
+		</div>
+
+		<div id="panel4" class="col-md-6 quarter cyan">
+			<h1>4</h1>
+		</div>
     </div>
-    <div class="if-connecting">
-		<h1>Connection in progress ...</h1>
-    </div>
-    <div class="if-connected">
-		<h1>Connected to the player \o/</h1>
-		<div>
-			<input type="button" value="start NYC: Downtown, Crosstown" onclick="doStart('data/nyc-downtown-crosstown.json');"/>
-		</div>
-		<div>
-			<input type="button" value="start NYC: West Uptown" onclick="doStart('data/nyc-uptown-west.json');"/>
-		</div>
-		<div>
-			<input type="button" value="start Highway Commute and Local Stop" onclick="doStart('data/localwithgps.json');"/>
-		</div>
-		<div>
-			<input type="button" value="stop" onclick="doStop();" />
-		</div>
-		<div id="panels">
-			<div id="panel1">
-				<img id="view1" src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Ireland_road_sign_RUS_027.svg"/>
-				<div id="vspan">
-					<svg height="100" width="100"> <circle cx="50" cy="50" r="49" stroke="white" stroke-width="3"/> <text x="30" y="80" fill="white">km/h</text> </svg>
-					<div id="vspeed" class="number">0</div>
-				</div>
-				<div id="espan">
-					<svg height="100" width="100"> <circle cx="50" cy="50" r="49" stroke="white" stroke-width="3"/> <text x="30" y="80" fill="white">rpm</text> </svg>
-					<div id="espeed" class="number">0</div>
-				</div>
-			</div>
-			<div id="panel2">
-				<img id="view2" src="https://upload.wikimedia.org/wikipedia/commons/b/bb/Information_road_sign_parking.svg"/>
-				<img id="car" src="images/car-top-view.png"/>
-				<div id="copan">
-					<div>
-						<div id="con1"></div>
-						<div id="con2"></div>
-						<div id="con3"></div>
-						<div id="con4"></div>
-						<div id="con5"></div>
-						<div id="con6"></div>
-						<div id="con7"></div>
-						<div id="con8"></div>
-						<div id="con9"></div>
-					</div>
-				</div>
-				<div id="gas">
-					<div id="gpgreen"></div>
-					<div id="gpblack"></div>
-					<div id="gpred"></div>
-				</div>
-			</div>
-			<div id="panel3">
-			</div>
-		</div>
-	</div>
-	<div>
-		<div>LAT: <span id="lat">?</span> degree</div>
-		<div>LON: <span id="lon">?</span> degree</div>
-		<div>HEA: <span id="hea">?</span> degree</div>
-		<div>VSP: <span id="vsp">?</span> km/h</div>
-		<div>ESP: <span id="esp">?</span> tr/mn</div>
-		<div>FUE: <span id="fue">?</span> %</div>
-		<div>ODO: <span id="odo">?</span> km</div>
-		<div>FSR: <span id="fsr">?</span> L</div>
-		<div>CON: <span id="con">?</span> L/100km</div>
-	</div>
 </body>
 </html>

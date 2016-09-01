@@ -15,7 +15,7 @@ var AFB_context = (function() {
 	var context = function(token, uuid) {
 		this.token = token;
 		this.uuid = uuid;
-	}
+	};
 
 	context.prototype = {
 		get token() {return TOKEN;},
@@ -56,7 +56,7 @@ var AFB_websocket = (function() {
 		this.ws.onmessage = onmessage.bind(this);
 		this.onopen = onopen;
 		this.onabort = onabort;
-	}
+	};
 
 	function onerror(event) {
 		var f = this.onabort;

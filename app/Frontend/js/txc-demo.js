@@ -30,7 +30,7 @@ var conscale = 15;
 var condt = 60000;
 
 // leaflet map
-var map = L.map('view2').setView([51.505, -0.09], 13);
+//var map = L.map('view2').setView([51.505, -0.09], 13);
 
 function updatePosition() {
 	if (curLat !== undefined && curLon !== undefined) {
@@ -134,6 +134,7 @@ function gotFuelSince(obj) {
 }
 
 function gotStart(obj) {
+	document.body.className = "started";
 	curLat = undefined;
 	prvLat = undefined;
 	curLon = undefined;
@@ -162,6 +163,7 @@ function gotStart(obj) {
 }
 
 function gotStop(obj) {
+	document.body.className = "connected";
 }
 
 function onAbort() {
@@ -192,6 +194,10 @@ function onSubscribed() {
 	ws.onevent("txc/vehicle_speed", gotVehicleSpeed);
 	ws.onevent("txc/START", gotStart);
 	ws.onevent("txc/STOP", gotStop);
+	ws.onevent("txc",function(obj) { 
+		if (obj.event != "txc/STOP")
+			document.body.className = "started";
+	});
 }
 
 function replyok(obj) {

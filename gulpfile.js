@@ -47,7 +47,7 @@ var nodeopts = config.DEBUG !== undefined ? '--debug='+config.DEBUG : '';
 var pipes = {};
 
 pipes.orderedVendorScripts = function() {
-    return plugins.order(['cash.js', 'leaflet-src.js','material.js']);
+    return plugins.order(['jquery.js', 'bootstrap.js','leaflet-src.js']);
 };
 
 pipes.minifiedFileName = function() {
