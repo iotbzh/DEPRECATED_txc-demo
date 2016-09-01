@@ -1,4 +1,4 @@
-body { background: #012; color: white; }
+//body { background: #012; color: white; }
 #panels { position: relative; height: 320px; width: 960px; }
 #panel1 { position: absolute; top: 0px; left: 0px; }
 #panel2 { position: absolute; top: 0px; right: 0px; }
@@ -15,7 +15,7 @@ body { background: #012; color: white; }
 #gpblack { background: url(gas-pump-black.png); }
 #gpgreen { background: url(gas-pump-green.png); }
 #gpred { background: url(gas-pump-red.png); visibility: hidden; }
-#copan { position: absolute; bottom: 25px; left: 25px; background: rgba(255,255,255,.3); padding: 5px; }
+#copan { position: absolute; bottom: 25px; left: 25px; background: rgba(128,128,128,.3); padding: 5px; }
 #copan div { position: relative; width: 300px; height: 50px; color: black; font-size: 10px; }
 #copan div div { position: absolute; top: 0px; width: 10%; background: yellow; height: 0%; border: 1px solid grey; text-align: center; }
 #con1 { left: 0%; }

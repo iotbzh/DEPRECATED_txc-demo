@@ -29,6 +29,7 @@ var wdgOdo, wdgFsr, wdgCon, wdgConX;
 var conscale = 15;
 var condt = 60000;
 
+// leaflet map
 var map = L.map('view2').setView([51.505, -0.09], 13);
 
 function updatePosition() {
@@ -40,7 +41,7 @@ function updatePosition() {
 		}
 
 		wdgView1.src = src1+"&location="+curLat+","+curLon+"&heading="+heading;
-		wdgView2.src = src2+"&center="+curLat+","+curLon;
+//		wdgView2.src = src2+"&center="+curLat+","+curLon;
 	}
 } 
 

@@ -31,7 +31,7 @@ var paths = {
     partials    : [frontend + '/**/*.html', '!' + frontend +'/index.html'],
     distDev     : './dist.dev',
     distProd    : './dist.prod',
-    sass:  [frontend+'/styles', 'bower_components/foundation-apps/scss','bower_components/foundation-icon-fonts'],
+    sass:  [frontend+'/styles', 'bower_components/bootstrap-sass/assets/stylesheets'],
     fonts: ['bower_components/**/*.woff'],
     favicon: frontend+'/images/favicon.ico',
 	wgtconfig: 'config.xml'
@@ -126,7 +126,7 @@ pipes.builtglobalStylesDev = function() {
 pipes.builtAppStylesProd = function() {
     return gulp.src(paths.appStyles)
         .pipe(plugins.sourcemaps.init())
-        .pipe(plugins.sass({includePaths: frontend + '/styles'}))
+        .pipe(plugins.sass({includePaths: paths.sass}))
         // .pipe(debug({title: '***** appStyle:'}))
         .pipe(plugins.cleanCss())
         .pipe(plugins.concat(config.APPNAME+'.css'))
@@ -402,6 +402,11 @@ gulp.task('watch-dev', ['clean-build-app-dev'], function() {
 			.pipe(pipes.doRsync("Dev"))
             .pipe(plugins.livereload());
     });
+    gulp.watch(paths.globalStyles, function() {
+        return pipes.builtglobalStylesDev()
+			.pipe(pipes.doRsync("Dev"))
+            .pipe(plugins.livereload());
+    });
 
 });
 
@@ -439,6 +444,11 @@ gulp.task('watch-prod', ['clean-build-app-prod'], function() {
     // watch styles
     gulp.watch(paths.appStyles, function() {
         return pipes.builtAppStylesProd()
+			.pipe(pipes.doRsync("Prod"))
+            .pipe(plugins.livereload());
+    });
+    gulp.watch(paths.globalStyles, function() {
+        return pipes.builtglobalStylesProd()
 			.pipe(pipes.doRsync("Prod"))
             .pipe(plugins.livereload());
     });
