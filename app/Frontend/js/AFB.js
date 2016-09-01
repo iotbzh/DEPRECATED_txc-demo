@@ -8,9 +8,8 @@ var urlhttp = "http://"+window.location.host+"/"+base;
 /****             AFB_context             ****/
 /****                                     ****/
 /*********************************************/
-var AFB_context;
-{
-	var UUID = undefined;
+var AFB_context = (function() {
+	var UUID;
 	var TOKEN = initialtoken;
 
 	var context = function(token, uuid) {
@@ -25,15 +24,14 @@ var AFB_context;
 		set uuid(id) {if(id) UUID=id;}
 	};
 
-	AFB_context = new context();
-}
+	return new context();
+})();
 /*********************************************/
 /****                                     ****/
 /****             AFB_websocket           ****/
 /****                                     ****/
 /*********************************************/
-var AFB_websocket;
-{
+var AFB_websocket = (function() {
 	var CALL = 2;
 	var RETOK = 3;
 	var RETERR = 4;
@@ -41,7 +39,7 @@ var AFB_websocket;
 
 	var PROTO1 = "x-afb-ws-json1";
 
-	AFB_websocket = function(onopen, onabort) {
+	var result = function(onopen, onabort) {
 		var u = urlws;
 		if (AFB_context.token) {
 			u = u + '?x-afb-token=' + AFB_context.token;
@@ -151,12 +149,14 @@ var AFB_websocket;
 		list.push(handler);
 	}
 
-	AFB_websocket.prototype = {
+	result.prototype = {
 		close: close,
 		call: call,
 		onevent: onevent
 	};
-}
+
+	return result;
+})();
 /*********************************************/
 /****                                     ****/
 /****                                     ****/
