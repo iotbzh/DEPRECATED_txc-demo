@@ -177,7 +177,7 @@ function onOpen() {
 			"odometer",
 			"vehicle_speed",
 			"START",
-			"STOP"]}).then(onSubscribed, onAbort);
+			"STOP"]}, onSubscribed, onAbort);
 }
 
 function onSubscribed() {
@@ -202,7 +202,7 @@ function replyerr(obj) {
 function send(message) {
 	var api = document.getElementById("api").value;
 	var verb = document.getElementById("verb").value;
-	ws.call(api+"/"+verb, {data:message}).then(replyok, replyerr);
+	ws.call(api+"/"+verb, {data:message}, replyok, replyerr);
 }
 
 function doStart(fname) {
