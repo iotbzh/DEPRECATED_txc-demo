@@ -241,11 +241,13 @@ pipes.builtIndexProd = function() {
 };
 
 pipes.builtAppDev = function() {
-    return es.merge(pipes.builtIndexDev(), pipes.builtPartialsDev(), pipes.processedFaviconDev(), pipes.processedImagesDev(), pipes.processedFontsDev() );
+    return es.merge(pipes.builtIndexDev(), pipes.builtPartialsDev(), pipes.processedFaviconDev(), pipes.processedImagesDev(), pipes.processedFontsDev() )
+		.pipe(pipes.doRsync("Dev"));
 };
 
 pipes.builtAppProd = function() {
-    return es.merge(pipes.builtIndexProd(), pipes.processedFaviconProd(), pipes.processedImagesProd(), pipes.processedFontsProd());
+    return es.merge(pipes.builtIndexProd(), pipes.processedFaviconProd(), pipes.processedImagesProd(), pipes.processedFontsProd())
+		.pipe(pipes.doRsync("Prod"));
 };
 
 pipes.widgetConfig = function(type) {
@@ -272,6 +274,21 @@ pipes.widgetPack = function(type,cb) {
 			cb(err);
 	});
 };
+
+pipes.doRsync=function(type) {
+	var dst=paths["dist"+type];
+	if (!argv.host) return plugins.empty();
+
+	return plugins.rsync({
+		root: dst+"/",
+		hostname: argv.host,
+		username: "root",
+		destination: "/usr/share/afm/applications/"+config.APPNAME+"/"+config.APPVER+"/htdocs/",
+		archive: true,
+		compress: true,
+		recursive: true
+	});
+}
 
 // == TASKS ========
 
@@ -349,21 +366,6 @@ gulp.task('clean-build-app-dev', ['clean-dev'], pipes.builtAppDev);
 
 // cleans and builds a complete prod environment
 gulp.task('clean-build-app-prod', ['clean-prod'], pipes.builtAppProd);
-
-pipes.doRsync=function(type) {
-	var dst=paths["dist"+type];
-	if (!argv.host) return plugins.empty();
-
-	return plugins.rsync({
-		root: dst+"/",
-		hostname: argv.host,
-		username: "root",
-		destination: "/usr/share/afm/applications/"+config.APPNAME+"/"+config.APPVER+"/htdocs/",
-		archive: true,
-		compress: true,
-		recursive: true
-	});
-}
 
 // clean, build, and watch live changes to the dev environment
 gulp.task('watch-dev', ['clean-build-app-dev'], function() {

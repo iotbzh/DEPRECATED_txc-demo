@@ -1,33 +1,14 @@
-html,body {
+body {
   padding:0;
-  margin:0;
+  margin: 0 auto;
+  width:100%;
   height:100%;
   min-height:100%;
+  background: #AAA;
+  color: black;
 }
 
-body {
-//	margin-top: 50px;
-//	margin-bottom: 50px;
-	background: #88F;
-	color: black;
-// background: #012;
-// color: white;
-}
-
-.full {
-	margin: 0 auto;
-	width:100%;
-	-webkit-background-size: cover;
-	-moz-background-size: cover;
-	-o-background-size: cover;
-	background-size: cover;
-}
-
-.red	{ background-color: red; }
-.green	{ background-color: green; }
-.blue	{ background-color: blue; }
-.cyan	{ background-color: cyan; }
-
+/* used in navbar to show/hide items depending on connection status */
 .not-connected .if-connecting    { display: none; }
 .not-connected .if-connected     { display: none; }
 .not-connected .if-started       { display: none; }
@@ -41,38 +22,53 @@ body {
 .started       .if-connecting    { display: none; }
 .started       .if-connected     { display: none; }
 
-.quarter{
+.content{
+	position: absolute;
+	left:0;
+	right:0;
+	bottom:0;
+	top: 50px;
+	padding:0;
+}
+
+.panel {
 	width:50%;
-	height:100%;
+	height:50%;
 	float:left;
 	padding:1em;
+	margin: 0;
 	box-sizing:border-box;
 	-moz-box-sizing:border-box;
 	-webkit-box-sizing:border-box;
-}
-.content{
-	height:50%;
-	width:100%;
+	border: 4px silver ridge;
+	position: relative;
 }
 
-#espan { position: absolute; bottom: 25px; left: 25px; }
-#espeed { position: absolute; top: 30px; left: 0px; width: 100px; height: 100px; color: green; font-size: 28px; }
-#vspan { position: absolute; bottom: 25px; right: 25px; width: 100px; height: 100px; }
-#vspeed { position: absolute; top: 16px; left: 0px; width: 100px; height: 100px; color: cyan; font-size: 42px; }
+#panel1 { background-color: #AAA; }
+#panel2	{ background-color: #FAA; }
+#panel3	{ background-color: #AFA; }
+#panel4 { background-color: #AAF; }
 
-/*
-#panels { position: relative; height: 320px; width: 960px; }
-#panel1 { position: absolute; top: 0px; left: 0px; }
-#panel2 { position: absolute; top: 0px; right: 0px; }
-#view1 { height: 320px; width: 480px; }
-#view2 { height: 320px; width: 480px; }
+/* in panel 1 */
+#view1 { max-width: 95%; max-height:95%; display:block; margin:0 auto; }
+#view2 { max-width: 95%; max-height:95%; display:block; margin:0 auto; }
+
 .number { text-align: center; vertical-align: middle; font: italic bold 12px monospace; }
+
+#espan { float: left; bottom: 100px; position: relative; }
+#espeed { position: absolute; top: 30px; width: 100px; color: green; font-size: 28px; }
+
+#vspan { float: right; bottom: 100px; position: relative; }
+#vspeed { position: absolute; top: 16px; width: 100px; color: cyan; font-size: 42px; }
+
+/* in panel 2 */
 #car { position: absolute; top: 136px; left: 228px; }
 #gas { position: absolute; bottom: 25px; right: 25px; width: 69px; height: 92px; }
 #gas div { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; overflow: hidden; }
 #gpblack { background: url(gas-pump-black.png); }
 #gpgreen { background: url(gas-pump-green.png); }
 #gpred { background: url(gas-pump-red.png); visibility: hidden; }
+
 #copan { position: absolute; bottom: 25px; left: 25px; background: rgba(128,128,128,.3); padding: 5px; }
 #copan div { position: relative; width: 300px; height: 50px; color: black; font-size: 10px; }
 #copan div div { position: absolute; top: 0px; width: 10%; background: yellow; height: 0%; border: 1px solid grey; text-align: center; }
@@ -85,6 +81,4 @@ body {
 #con7 { left: 66%; }
 #con8 { left: 77%; }
 #con9 { left: 88%; }
-*/
-
 
