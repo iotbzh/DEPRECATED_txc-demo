@@ -5,3 +5,9 @@ cmake_install.cmake
 .*.sw*
 node_modules
 bower_components
+txc-binding.so
+txc-demo-devel.wgt
+txc-demo.wgt
+dist.dev/
+dist.prod/
+package/

@@ -92,7 +92,7 @@ function displayConsumation(c) {
 			wdgConX[i].innerHTML = "";
 		} else {
 			wdgConX[i].style.height = (100*Math.min(1,consa[i+n]/conscale))+"%";
-			wdgConX[i].innerHTML = consa[i+n];
+			wdgConX[i].innerHTML = "<p>"+consa[i+n]+"</p>";
 		}
 	}
 }

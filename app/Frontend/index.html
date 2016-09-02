@@ -54,7 +54,7 @@
 						</ul>
 					</li>
 					<li class="if-started">
-						<a onclick="doStop()">Stop</a>
+						<a role="button" onclick="doStop()">Stop</a>
 					</li>
 				</ul>
             </div>
@@ -89,8 +89,13 @@
 		<div id="panel2" class="panel">
 			<img id="view2" src="images/PARKING.svg"/>
 			<img id="car" src="images/car-top-view.png"/>
-			<div id="copan">
-				<div>
+			<div id="gaspan">
+				<div id="gas">
+					<div id="gpgreen"></div>
+					<div id="gpblack"></div>
+					<div id="gpred"></div>
+				</div>
+				<div id="copan">
 					<div id="con1"></div>
 					<div id="con2"></div>
 					<div id="con3"></div>
@@ -102,12 +107,8 @@
 					<div id="con9"></div>
 				</div>
 			</div>
-			<div id="gas">
-				<div id="gpgreen"></div>
-				<div id="gpblack"></div>
-				<div id="gpred"></div>
-			</div>
 		</div>
+
 		<div id="panel3" class="panel">
 			<div>LAT: <span id="lat">?</span> degree</div>
 			<div>LON: <span id="lon">?</span> degree</div>

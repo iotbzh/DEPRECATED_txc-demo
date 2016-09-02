@@ -63,15 +63,33 @@ body {
 
 /* in panel 2 */
 #car { position: absolute; top: 136px; left: 228px; }
-#gas { position: absolute; bottom: 25px; right: 25px; width: 69px; height: 92px; }
-#gas div { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; overflow: hidden; }
-#gpblack { background: url(gas-pump-black.png); }
-#gpgreen { background: url(gas-pump-green.png); }
-#gpred { background: url(gas-pump-red.png); visibility: hidden; }
 
-#copan { position: absolute; bottom: 25px; left: 25px; background: rgba(128,128,128,.3); padding: 5px; }
-#copan div { position: relative; width: 300px; height: 50px; color: black; font-size: 10px; }
-#copan div div { position: absolute; top: 0px; width: 10%; background: yellow; height: 0%; border: 1px solid grey; text-align: center; }
+#gaspan { position: absolute; bottom:0; left:0; right:0; background: rgba(128,128,128,.3); padding: 1em; }
+
+#gas { position: relative; float: right; width: 69px; height: 92px; }
+#gas div { position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; overflow: hidden; }
+
+#copan { overflow: hidden; min-height: 50px; position: relative; height: 92px;}
+#copan div { 
+	display:inline;
+	position: absolute;
+	bottom: 0;
+	width: 10%;
+	height: 0%;
+	font-size: 10px;
+	color: black;
+	background: yellow; 
+	border: 1px solid grey;
+	padding: 0;
+}
+#copan div p {
+	text-align: center;
+	position: absolute;
+	bottom: 2px;
+	margin: 0;
+	width: 100%;
+}
+
 #con1 { left: 0%; }
 #con2 { left: 11%; }
 #con3 { left: 22%; }
@@ -81,4 +99,8 @@ body {
 #con7 { left: 66%; }
 #con8 { left: 77%; }
 #con9 { left: 88%; }
+
+#gpblack { background: url(/images/gas-pump-black.png); }
+#gpgreen { background: url(/images/gas-pump-green.png); }
+#gpred { background: url(/images/gas-pump-red.png); visibility: hidden; }
 
