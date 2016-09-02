@@ -42,6 +42,15 @@ body {
 	-webkit-box-sizing:border-box;
 	border: 4px silver ridge;
 	position: relative;
+	text-align: center;
+	overflow: hidden;
+}
+
+.center {
+	display: table-cell;
+	width:100%;
+	height:100%;
+	vertical-align: middle;
 }
 
 #panel1 { background-color: #AAA; }
@@ -50,8 +59,17 @@ body {
 #panel4 { background-color: #AAF; }
 
 /* in panel 1 */
-#view1 { width: 100% !important; height:auto !important; display:block; }
-#view2 { width: 100% !important; height:auto !important; display:block; }
+#view1,#view2 {
+	position: relative;
+	width: auto !important;
+	height: auto !important;
+	min-width: 100%;
+	min-height: 100%;
+	display: block;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+}
 
 .number { text-align: center; vertical-align: middle; font: italic bold 12px monospace; }
 
@@ -62,7 +80,12 @@ body {
 #vspeed { position: absolute; top: 16px; width: 100px; color: cyan; font-size: 42px; }
 
 /* in panel 2 */
-#car { position: absolute; top: 136px; left: 228px; }
+#car {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+}
 
 #gaspan { position: absolute; bottom:0; left:0; right:0; background: rgba(128,128,128,.3); padding: 1em; }
 

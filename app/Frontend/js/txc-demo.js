@@ -41,7 +41,7 @@ function updatePosition() {
 		}
 
 		wdgView1.src = src1+"&location="+curLat+","+curLon+"&heading="+heading;
-//		wdgView2.src = src2+"&center="+curLat+","+curLon;
+		wdgView2.src = src2+"&center="+curLat+","+curLon;
 	}
 } 
 
