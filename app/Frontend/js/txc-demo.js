@@ -78,7 +78,7 @@ var maps={
 $(function() {
 	for (var id in maps) {
 		maps[id] = L.map(id,maps[id]);
-	};
+	}
 });
 
 function updatePosition() {
@@ -97,7 +97,7 @@ function updatePosition() {
 				duration: 1.0,
 				easeLinearity: 1
 			});
-		};
+		}
 	}
 } 
 
