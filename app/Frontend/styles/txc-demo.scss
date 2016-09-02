@@ -80,6 +80,12 @@ body {
 #vspeed { position: absolute; top: 16px; width: 100px; color: cyan; font-size: 42px; }
 
 /* in panel 2 */
+#mapstreet {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
 #car {
 	position: absolute;
 	top: 50%;
@@ -130,5 +136,12 @@ body {
 /* panel 3 */
 #xcdata {
 	text-align: left;
+}
+
+/* panel 4 */
+#mapsat {
+	position: absolute;
+	width: 100%;
+	height: 100%;
 }
 

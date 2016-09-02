@@ -90,11 +90,7 @@
 		</div>
 
 		<div id="panel2" class="panel">
-			<img id="view2" src="images/PARKING.svg"/>
-<!-- DEV MODE
-			<img id="view2" src="http://maps.googleapis.com/maps/api/staticmap?key=AIzaSyD4Sbh8-imto8EO7HP3uteQl6WRJaHwVOU&maptype=hybrid&zoom=18&size=480x320&center=42.269344,-83.246391"/>
--->
-			<img id="car" src="images/car-top-view.png"/>
+			<div id="mapsat"></div>
 			<div id="gaspan">
 				<div id="gas">
 					<div id="gpgreen"></div>
@@ -122,9 +118,9 @@
 					<tr><th class="col-md-4">Data</th><th>Value</th></tr>
 				</thead>
 				<tbody>
-					<tr> <td>Latitude</td> <td><span id="lat">?</span> degree</td> </tr>
-					<tr> <td>Longitude</td> <td><span id="lon">?</span> degree</td> </tr>
-					<tr> <td>Heading</td> <td><span id="hea">?</span> degree</td> </tr>
+					<tr> <td>Latitude</td> <td><span id="lat">?</span> degrees</td> </tr>
+					<tr> <td>Longitude</td> <td><span id="lon">?</span> degrees</td> </tr>
+					<tr> <td>Heading</td> <td><span id="hea">?</span> degrees</td> </tr>
 					<tr> <td>Vehicle Speed</td> <td><span id="vsp">?</span> km/h</td> </tr>
 					<tr> <td>Engine Speed</td> <td><span id="esp">?</span> tr/mn</td> </tr>
 					<tr> <td>Fuel Level</td> <td><span id="fue">?</span> %</td> </tr>
@@ -136,8 +132,7 @@
 		</div>
 
 		<div id="panel4" class="panel">
-			<div>
-			</div>
+			<div id="mapstreet"></div>
 		</div>
     </div>
 </body>

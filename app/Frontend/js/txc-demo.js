@@ -15,33 +15,89 @@ var heading = 0;
 var R2D = 180.0 / Math.PI;
 var D2R = Math.PI / 180.0;
 var gapikey = "AIzaSyBG_RlEJr2i7zqJVQijKh4jQrE-DkeHau0";
-var mapikey = "AIzaSyD4Sbh8-imto8EO7HP3uteQl6WRJaHwVOU";
 var src1 = "http://maps.googleapis.com/maps/api/streetview?key="+gapikey+"&size=480x320";
-var src2 = "http://maps.googleapis.com/maps/api/staticmap?key="+mapikey+"&maptype=hybrid&zoom=18&size=480x320";
 var fuel;
 var odoini,odo,odoprv;
 var fsrini,fsr,fsrprv;
 var con,cons,consa = [ ];
 var minspeed = 5;
-var wdgLat, wdgLon, wdgVsp, wdgVspeed, wdgEsp, wdgEspeed, wdgView1, wdgView2, wdgHea, wdgCar;
+var wdgLat, wdgLon, wdgVsp, wdgVspeed, wdgEsp, wdgEspeed, wdgView1, wdgHea, wdgCar;
 var wdgFue, wdgGpred, wdgGpblack;
 var wdgOdo, wdgFsr, wdgCon, wdgConX;
 var conscale = 15;
 var condt = 60000;
 
+var layers={
+	googleStreets: L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+		minZoom: 1,
+		maxZoom: 20,
+		subdomains:['mt0','mt1','mt2','mt3']
+	}),
+	googleHybrid: L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+		minZoom: 1,
+		maxZoom: 20,
+		subdomains:['mt0','mt1','mt2','mt3']
+	}),
+	googleSat: L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+		minZoom: 1,
+		maxZoom: 20,
+		subdomains:['mt0','mt1','mt2','mt3']
+	}),
+	googleTerrain: L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
+		minZoom: 1,
+		maxZoom: 20,
+		subdomains:['mt0','mt1','mt2','mt3']
+	}),
+	openStreetMap: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		minZoom: 1,
+		maxZoom: 19,
+		attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+	})
+};
+
 // leaflet map
-//var map = L.map('view2').setView([51.505, -0.09], 13);
+var defaultLocation=[47.596264,-2.7953953];
+var maps={
+	mapstreet: {
+		center: defaultLocation,
+		layers: layers.openStreetMap,
+		zoom: 15,
+		dragging: false,
+		attributionControl: false,
+
+	},
+	mapsat: { 
+		center: defaultLocation,
+		layers: layers.googleHybrid,
+		zoom: 17,
+		dragging: false,
+		attributionControl: false,
+	}
+};
+
+$(function() {
+	for (var id in maps) {
+		maps[id] = L.map(id,maps[id]);
+	};
+});
 
 function updatePosition() {
 	if (curLat !== undefined && curLon !== undefined) {
 		if (prvLat !== undefined && prvLon !== undefined && vspeed >= minspeed) {
 			heading = Math.round(R2D * Math.atan2((curLon - prvLon)*Math.cos(D2R*curLat), curLat - prvLat));
 			wdgHea.innerHTML = String(heading);
-			wdgCar.style = "transform: rotate("+heading+"deg);";
+			//wdgCar.style = "transform: rotate("+heading+"deg);";
 		}
 
 		wdgView1.src = src1+"&location="+curLat+","+curLon+"&heading="+heading;
-		wdgView2.src = src2+"&center="+curLat+","+curLon;
+
+		for (var id in maps) {
+			maps[id].panTo([curLat,curLon],{
+				animate:true,
+				duration: 1.0,
+				easeLinearity: 1
+			});
+		};
 	}
 } 
 
@@ -229,7 +285,6 @@ function init() {
 	wdgEsp = document.getElementById("esp");
 	wdgEspeed = document.getElementById("espeed");
 	wdgView1 = document.getElementById("view1");
-	wdgView2 = document.getElementById("view2");
 	wdgHea = document.getElementById("hea");
 	wdgCar = document.getElementById("car");
 	wdgFue = document.getElementById("fue");
