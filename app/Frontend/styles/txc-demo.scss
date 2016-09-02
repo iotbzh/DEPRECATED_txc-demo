@@ -35,7 +35,7 @@ body {
 	width:50%;
 	height:50%;
 	float:left;
-	padding:1em;
+	padding:0;
 	margin: 0;
 	box-sizing:border-box;
 	-moz-box-sizing:border-box;
@@ -50,8 +50,8 @@ body {
 #panel4 { background-color: #AAF; }
 
 /* in panel 1 */
-#view1 { max-width: 95%; max-height:95%; display:block; margin:0 auto; }
-#view2 { max-width: 95%; max-height:95%; display:block; margin:0 auto; }
+#view1 { width: 100% !important; height:auto !important; display:block; }
+#view2 { width: 100% !important; height:auto !important; display:block; }
 
 .number { text-align: center; vertical-align: middle; font: italic bold 12px monospace; }
 
