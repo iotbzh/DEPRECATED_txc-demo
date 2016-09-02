@@ -222,6 +222,10 @@ function gotStop(obj) {
 	document.body.className = "connected";
 }
 
+function gotStat(obj) {
+	wdgStat.innerHTML = obj.data;
+}
+
 function onAbort() {
 	document.body.className = "not-connected";
 }
@@ -237,6 +241,8 @@ function onOpen() {
 			"vehicle_speed",
 			"START",
 			"STOP"]}, onSubscribed, onAbort);
+	ws.call("stat/subscribe", true);
+	ws.onevent("stat/stat", gotStat);
 }
 
 function onSubscribed() {
@@ -292,6 +298,7 @@ function init() {
 	wdgGpblack = document.getElementById("gpblack");
 	wdgOdo = document.getElementById("odo");
 	wdgFsr = document.getElementById("fsr");
+	wdgStat = document.getElementById("stat");
 	wdgCon = document.getElementById("con");
 	wdgConX = [
 			document.getElementById("con1"),

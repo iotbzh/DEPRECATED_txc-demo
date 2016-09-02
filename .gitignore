@@ -6,6 +6,7 @@ cmake_install.cmake
 node_modules
 bower_components
 txc-binding.so
+stat-binding.so
 txc-demo-devel.wgt
 txc-demo.wgt
 dist.dev/

@@ -68,12 +68,19 @@ set_target_properties(txc-binding PROPERTIES
 )
 
 ###############################################################
+add_library(stat-binding MODULE binding/stat-binding.c)
+set_target_properties(stat-binding PROPERTIES
+	PREFIX ""
+	LINK_FLAGS "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/binding/export.map"
+)
+
+###############################################################
 
 file(GLOB_RECURSE HTML5FILES app/*)
 
 add_custom_command(
 	OUTPUT ${PROJECT_NAME}.wgt
-	DEPENDS txc-binding config.xml.in ${HTML5FILES} bower.json gulpfile.js package.json
+	DEPENDS txc-binding stat-binding config.xml.in ${HTML5FILES} bower.json gulpfile.js package.json
 	COMMAND rm -rf package
 	COMMAND mkdir -p package/${PROJECT_LIBDIR}
 	COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && gulp widget-config-prod && cp -a dist.prod ${CMAKE_CURRENT_BINARY_DIR}/package/htdocs
@@ -86,7 +93,7 @@ add_custom_command(
 
 add_custom_command(
 	OUTPUT ${PROJECT_NAME}-devel.wgt
-	DEPENDS txc-binding config.xml.in ${HTML5FILES} bower.json gulpfile.js package.json
+	DEPENDS txc-binding stat-binding config.xml.in ${HTML5FILES} bower.json gulpfile.js package.json
 	COMMAND rm -rf package
 	COMMAND mkdir -p package/${PROJECT_LIBDIR}
 	COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && gulp widget-config-dev && cp -a dist.dev ${CMAKE_CURRENT_BINARY_DIR}/package/htdocs
