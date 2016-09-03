@@ -5,6 +5,8 @@
 	"private": true,
 	"dependencies": {
 		"bootstrap-sass": "~3",
-		"leaflet": "~1.0.0"
+		"leaflet": "~1.0.0",
+		"leaflet-rotatedmarker": "~0.1",
+		"simplegauges": "https://github.com/SignalK/simplegauges.git"
 	}
 }

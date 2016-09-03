@@ -20,7 +20,7 @@
 	<!-- inject:js -->
 	<!-- endinject -->
 </head>
-<body onload="init();" class="not-connected">
+<body class="not-connected">
 	<!-- Navigation -->
 	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container-fluid">
@@ -40,7 +40,7 @@
 					<li>
 					</li>
 					<li class="if-not-connected">
-                        <a onclick="init();">Connect</a>
+                        <a onclick="doConnect();">Connect</a>
                     </li>
 					<li class="if-connecting">
                         <a onclick="doStop();">Connecting...</a>
@@ -91,6 +91,7 @@
 
 		<div id="panel2" class="panel">
 			<div id="mapsat"></div>
+			<img id="car" class="invisible" src="images/car-top-view.png"/>
 			<div id="gaspan">
 				<div id="gas">
 					<div id="gpgreen"></div>

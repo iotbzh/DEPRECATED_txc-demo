@@ -26,16 +26,31 @@ var paths = {
     scripts     : frontend+'/**/*.js',
     appStyles   : [frontend+'/**/*.scss', '!'+frontend+'/styles/*.scss'],
     globalStyles: [frontend+'/styles/*.scss'],
-    images      : [frontend+'/**/*.png',frontend+'/**/*.jpg',frontend+'/**/*.jpeg',frontend+'/**/*.svg',frontend+'/**/*.ttf'],
+    images      : [
+		frontend+'/**/*.png',
+		frontend+'/**/*.jpg',
+		frontend+'/**/*.jpeg',
+		frontend+'/**/*.svg',
+		frontend+'/**/*.ttf',
+		'bower_components/leaflet/dist/images/*.png'
+	],
     index       : frontend+'/index.html',
     partials    : [frontend + '/**/*.html', '!' + frontend +'/index.html'],
     distDev     : './dist.dev',
     distProd    : './dist.prod',
-    sass:  [frontend+'/styles', 'bower_components/bootstrap-sass/assets/stylesheets'],
+    sass:  [
+		frontend+'/styles',
+		'bower_components/bootstrap-sass/assets/stylesheets'
+	],
     fonts: ['bower_components/**/*.woff'],
     favicon: frontend+'/images/favicon.ico',
 	wgtconfig: 'config.xml'
 };
+
+// add bower files to global styles
+bowerFiles('**/*.css').forEach(function(p) {
+	paths.globalStyles.push(p);
+});
 
 paths['distAppDev']  = paths.distDev + config.URLBASE;
 paths['distAppProd'] = paths.distProd + config.URLBASE;
@@ -81,7 +96,7 @@ pipes.builtAppScriptsProd = function() {
 };
 
 pipes.builtVendorScriptsDev = function() {
-    return gulp.src(bowerFiles())
+    return gulp.src(bowerFiles('**/*.js'))
         .pipe(gulp.dest( paths.distDev +'/bower_components'));
 };
 
@@ -143,6 +158,7 @@ pipes.builtglobalStylesProd = function() {
         .pipe(plugins.sourcemaps.write())
         .pipe(pipes.minifiedFileName())
         .pipe(rename(function (path) {path.dirname="";return path;}))
+        .pipe(plugins.concat('output.min.css'))
         .pipe(gulp.dest(paths.distProd + '/global_styles'));
 };
 
@@ -161,7 +177,8 @@ pipes.processedFontsProd = function() {
 
 pipes.processedImagesDev = function() {
     return gulp.src(paths.images)
-        .pipe(gulp.dest(paths.distAppDev));
+		.pipe(rename(function(path) { path.dirname=""; return path; }))
+        .pipe(gulp.dest(paths.distAppDev+"/images/"));
 };
 
 pipes.processedFaviconDev = function() {
@@ -171,12 +188,13 @@ pipes.processedFaviconDev = function() {
 
 pipes.processedImagesProd = function() {
     return gulp.src(paths.images)
+		.pipe(rename(function(path) { path.dirname=""; return path; }))
        .pipe(imagemin({
             progressive: true,
             svgoPlugins: [{removeViewBox: false}],
             use: [pngquant()]
         }))
-        .pipe(gulp.dest(paths.distAppProd));
+        .pipe(gulp.dest(paths.distAppProd+"/images/"));
 };
 
 pipes.processedFaviconProd = function() {

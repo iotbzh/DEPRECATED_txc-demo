@@ -104,7 +104,7 @@ var AFB_websocket = (function() {
 			var p = pendings[id];
 			delete pendings[id];
 			var f = p[offset];
-			f(ans);
+			f && f(ans);
 		}
 	}
 

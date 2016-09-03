@@ -57,36 +57,99 @@ var layers={
 
 // leaflet map
 var defaultLocation=[47.596264,-2.7953953];
+L.Icon.Default.imagePath="/images";
 var maps={
 	mapstreet: {
-		center: defaultLocation,
-		layers: [layers.openStreetMap,layers.googleStreets],
-		zoom: 15,
-		attributionControl: false,
-
+		map: null,
+		options: {
+			center: defaultLocation,
+			layers: [layers.openStreetMap,layers.googleStreets],
+			zoom: 15,
+			attributionControl: false,
+		}
 	},
-	mapsat: { 
-		center: defaultLocation,
-		layers: layers.googleHybrid,
-		zoom: 17,
-		attributionControl: false,
+	mapsat: {
+		map: null,
+		options: {
+			center: defaultLocation,
+			layers: layers.googleHybrid,
+			zoom: 17,
+			attributionControl: false,
+		},
+		events: {
+			load: adjustCar,
+			viewreset: adjustCar,
+			zoomend: adjustCar,
+			move: adjustCar,
+			resize: adjustCar,
+		},
+/*		icon: {
+			iconUrl: '/images/car-top-view.png',
+			iconSize: [25,48],
+			iconAnchor: [12,33],
+		},
+		marker: {
+			rotationAngle: heading,
+			rotationOrigin: "12px 33px"
+		}
+*/
 	}
 };
 
-$(function() {
+function initMaps() {
 	for (var id in maps) {
-		maps[id] = L.map(id,maps[id]);
+		var mh=maps[id];
+		mh.map=L.map(id,mh.options);
+		if (mh.marker) {
+			mh.marker=L.marker(mh.map.getCenter(), mh.marker);
+			mh.marker.addTo(mh.map);
+			if (mh.icon) {
+				mh.icon=L.icon(mh.icon);
+				mh.marker.setIcon(mh.icon);
+			}
+		}
+		if (mh.events) {
+			for (var evt in mh.events) {
+				mh.map.on(evt,mh.events[evt]);
+	
+			}
+		}
 	}
-	setMapsDraggable(true);
-});
+	adjustCar(); // initial call
+	setMapsLockState(false);
+}
 
-function setMapsDraggable(b) {
+function setMapsLockState(b) {
+	// maps shouldn't be draggable while trace is active
 	for (var id in maps) {
-		if (b)
-			maps[id].dragging.enable();
+		if (b) 
+			maps[id].map.dragging.disable();
 		else
-			maps[id].dragging.disable();
+			maps[id].map.dragging.enable();
 	}
+	
+	// car visible or not
+	if (b) {
+		// lock state: car visible
+		$(wdgCar).removeClass("invisible");
+	}
+	else {
+		$(wdgCar).addClass("invisible");
+	}
+}
+
+function adjustCar() {
+	/* get zoom level on map and adjust scaling ! */
+	/* 
+	  zoom => scale
+	   19 => 1.0 
+	   15 => 0.5 
+	*/
+	var zl=maps.mapsat.map.getZoom();
+	var scale=0.125*zl-1.375;
+	if (scale<0.5) scale=0.5;
+	wdgCar.style = "transform: scale("+scale+") translate(-50%,-68%) rotate("+heading+"deg)";
+	//console.log("zoom:"+zl+" heading:"+heading+" scale:"+scale);
 }
 
 function updatePosition() {
@@ -94,17 +157,21 @@ function updatePosition() {
 		if (prvLat !== undefined && prvLon !== undefined && vspeed >= minspeed) {
 			heading = Math.round(R2D * Math.atan2((curLon - prvLon)*Math.cos(D2R*curLat), curLat - prvLat));
 			wdgHea.innerHTML = String(heading);
-			//wdgCar.style = "transform: rotate("+heading+"deg);";
 		}
 
 		wdgView1.src = src1+"&location="+curLat+","+curLon+"&heading="+heading;
 
 		for (var id in maps) {
-			maps[id].panTo([curLat,curLon],{
+			var mh=maps[id];
+			mh.map.panTo([curLat,curLon],{
 				animate:true,
 				duration: 1.0,
 				easeLinearity: 1
 			});
+			if (mh.marker) {
+				mh.marker.setLatLng([curLat,curLon]);
+				mh.marker.setRotationAngle(heading);
+			}
 		}
 	}
 } 
@@ -224,12 +291,12 @@ function gotStart(obj) {
 		wdgConX[i].style.height = "0%";
 		wdgConX[i].innerHTML = "";
 	}
-	setMapsDraggable(false);
+	setMapsLockState(true);
 }
 
 function gotStop(obj) {
 	document.body.className = "connected";
-	setMapsDraggable(true);
+	setMapsLockState(false);
 }
 
 function gotStat(obj) {
@@ -238,7 +305,7 @@ function gotStat(obj) {
 
 function onAbort() {
 	document.body.className = "not-connected";
-	setMapsDraggable(true);
+	setMapsLockState(false);
 }
 
 function onOpen() {
@@ -258,7 +325,7 @@ function onOpen() {
 
 function onSubscribed() {
 	document.body.className = "connected";
-	setMapsDraggable(true);
+	setMapsLockState(false);
 	ws.onevent("txc/engine_speed", gotEngineSpeed);
 	ws.onevent("txc/fuel_level", gotFuelLevel);
 	ws.onevent("txc/fuel_consumed_since_restart", gotFuelSince);
@@ -271,7 +338,7 @@ function onSubscribed() {
 	ws.onevent("txc",function(obj) { 
 		if (obj.event != "txc/STOP") {
 			document.body.className = "started";
-			setMapsDraggable(false);
+			setMapsLockState(true);
 		}
 	});
 }
@@ -288,6 +355,12 @@ function send(message) {
 	ws.call(api+"/"+verb, {data:message}, replyok, replyerr);
 }
 
+function doConnect() {
+	document.body.className = "connecting";
+	setMapsLockState(false);
+	ws = new afb.ws(onOpen, onAbort);
+}
+
 function doStart(fname) {
 	ws.call('txc/start',{filename: fname});
 }
@@ -296,9 +369,7 @@ function doStop() {
 	ws.call('txc/stop',true);
 }
 
-function init() {
-	document.body.className = "connecting";
-	setMapsDraggable(true);
+$(function() {
 	wdgLat = document.getElementById("lat");
 	wdgLon = document.getElementById("lon");
 	wdgVsp = document.getElementById("vsp");
@@ -326,6 +397,9 @@ function init() {
 			document.getElementById("con8"),
 			document.getElementById("con9")
 		];
-	ws = new afb.ws(onOpen, onAbort);
-}
+	
+	initMaps();
+
+	doConnect();
+});
 
