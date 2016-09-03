@@ -60,9 +60,8 @@ var defaultLocation=[47.596264,-2.7953953];
 var maps={
 	mapstreet: {
 		center: defaultLocation,
-		layers: layers.openStreetMap,
+		layers: [layers.openStreetMap,layers.googleStreets],
 		zoom: 15,
-		dragging: false,
 		attributionControl: false,
 
 	},
@@ -70,7 +69,6 @@ var maps={
 		center: defaultLocation,
 		layers: layers.googleHybrid,
 		zoom: 17,
-		dragging: false,
 		attributionControl: false,
 	}
 };
@@ -79,7 +77,17 @@ $(function() {
 	for (var id in maps) {
 		maps[id] = L.map(id,maps[id]);
 	}
+	setMapsDraggable(true);
 });
+
+function setMapsDraggable(b) {
+	for (var id in maps) {
+		if (b)
+			maps[id].dragging.enable();
+		else
+			maps[id].dragging.disable();
+	}
+}
 
 function updatePosition() {
 	if (curLat !== undefined && curLon !== undefined) {
@@ -216,10 +224,12 @@ function gotStart(obj) {
 		wdgConX[i].style.height = "0%";
 		wdgConX[i].innerHTML = "";
 	}
+	setMapsDraggable(false);
 }
 
 function gotStop(obj) {
 	document.body.className = "connected";
+	setMapsDraggable(true);
 }
 
 function gotStat(obj) {
@@ -228,6 +238,7 @@ function gotStat(obj) {
 
 function onAbort() {
 	document.body.className = "not-connected";
+	setMapsDraggable(true);
 }
 
 function onOpen() {
@@ -247,6 +258,7 @@ function onOpen() {
 
 function onSubscribed() {
 	document.body.className = "connected";
+	setMapsDraggable(true);
 	ws.onevent("txc/engine_speed", gotEngineSpeed);
 	ws.onevent("txc/fuel_level", gotFuelLevel);
 	ws.onevent("txc/fuel_consumed_since_restart", gotFuelSince);
@@ -257,8 +269,10 @@ function onSubscribed() {
 	ws.onevent("txc/START", gotStart);
 	ws.onevent("txc/STOP", gotStop);
 	ws.onevent("txc",function(obj) { 
-		if (obj.event != "txc/STOP")
+		if (obj.event != "txc/STOP") {
 			document.body.className = "started";
+			setMapsDraggable(false);
+		}
 	});
 }
 
@@ -284,6 +298,7 @@ function doStop() {
 
 function init() {
 	document.body.className = "connecting";
+	setMapsDraggable(true);
 	wdgLat = document.getElementById("lat");
 	wdgLon = document.getElementById("lon");
 	wdgVsp = document.getElementById("vsp");
