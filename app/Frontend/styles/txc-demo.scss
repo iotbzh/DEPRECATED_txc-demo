@@ -1,11 +1,31 @@
-body {
-  padding:0;
-  margin: 0 auto;
-  width:100%;
-  height:100%;
-  min-height:100%;
-  background: #FFF;
-  color: black;
+html,body {
+	padding:0;
+	margin: 0 auto;
+	width:100%;
+	height:100%;
+	min-height:100%;
+	color: black;
+	background: #FFF;
+}
+
+/*
+#iotbzh-logo {
+	margin: 8px;
+	height: 34px;
+}
+*/
+
+/* http://stackoverflow.com/questions/18474564/bootstrap-3-navbar-with-logo */
+.navbar-brand {
+	padding: 0px;
+}
+.navbar-brand>img {
+	height: 100%;
+	padding: 5px;
+	width: auto;
+}
+.navbar-right {
+	margin-right: 0;
 }
 
 /* used in navbar to show/hide items depending on connection status */
@@ -31,7 +51,7 @@ body {
 	padding:0;
 }
 
-.panel {
+.quad {
 	position: relative;
 	overflow: hidden;
 	width:50%;
@@ -54,12 +74,12 @@ body {
 	vertical-align: middle;
 }
 
-#panel1 { background-color: #FFF; margin-right: 0; }
-#panel2	{ background-color: #FFF; }
-#panel3	{ background-color: #FFF; text-align:left;}
-#panel4 { background-color: #FFF; }
+#quad1 { }
+#quad2 { }
+#quad3 { text-align: left; overflow: auto; }
+#quad4 { }
 
-/* in panel 1 */
+/* in quad 1 */
 #view1,#view2 {
 	position: relative;
 	width: auto !important;
@@ -80,7 +100,7 @@ body {
 #vspan { position: absolute; right: 1em; bottom: 1em; }
 #vspeed { position: absolute; top: 16px; width: 100px; color: cyan; font-size: 42px; }
 
-/* in panel 2 */
+/* in quad 2 */
 #mapstreet {
 	position: absolute;
 	width: 100%;
@@ -134,12 +154,12 @@ body {
 #gpgreen { background: url(/images/gas-pump-green.png); }
 #gpred { background: url(/images/gas-pump-red.png); visibility: hidden; }
 
-/* panel 3 */
+/* quad 3 */
 #xcdata {
 	text-align: left;
 }
 
-/* panel 4 */
+/* quad 4 */
 #mapsat {
 	position: absolute;
 	width: 100%;

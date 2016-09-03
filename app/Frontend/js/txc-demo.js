@@ -117,6 +117,8 @@ function initMaps() {
 	}
 	adjustCar(); // initial call
 	setMapsLockState(false);
+
+	wdgView1.src = src1+"&location=47.6205682,-2.7949381&heading=185";
 }
 
 function setMapsLockState(b) {
