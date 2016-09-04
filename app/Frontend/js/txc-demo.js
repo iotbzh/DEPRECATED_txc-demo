@@ -56,7 +56,7 @@ var layers={
 };
 
 // leaflet map
-var defaultLocation=[47.596264,-2.7953953];
+var defaultLocation=[47.6243678,-2.7789165];
 L.Icon.Default.imagePath="/images";
 var maps={
 	mapstreet: {
@@ -142,7 +142,7 @@ function initMaps() {
 	adjustCar(); // initial call
 	setMapsLockState(false);
 
-	wdgView1.src = src1+"&location=47.6205682,-2.7949381&heading=185";
+	wdgView1.src = src1+"&location="+defaultLocation[0]+","+defaultLocation[1]+"&heading=210";
 }
 
 function setMapsLockState(b) {
