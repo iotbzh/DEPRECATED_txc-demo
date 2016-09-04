@@ -64,7 +64,7 @@ html,body {
 	-webkit-box-sizing:border-box;
 	border: 4px ridge silver;
 	border-radius: 15px;
-	text-align: center;
+	text-align: left;
 }
 
 .center {
@@ -76,7 +76,7 @@ html,body {
 
 #quad1 { }
 #quad2 { }
-#quad3 { text-align: left; overflow: auto; }
+#quad3 { overflow: auto; }
 #quad4 { }
 
 /* in quad 1 */
@@ -157,6 +157,10 @@ html,body {
 /* quad 3 */
 #xcdata {
 	text-align: left;
+}
+
+.leaflet-control-layers-toggle {
+    background-image: url(/images/layers.png);
 }
 
 /* quad 4 */

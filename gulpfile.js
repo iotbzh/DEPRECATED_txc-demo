@@ -49,7 +49,7 @@ var paths = {
 
 // add bower files to global styles
 bowerFiles('**/*.css').forEach(function(p) {
-	paths.globalStyles.push(p);
+	paths.globalStyles.unshift(p);
 });
 
 paths['distAppDev']  = paths.distDev + config.URLBASE;

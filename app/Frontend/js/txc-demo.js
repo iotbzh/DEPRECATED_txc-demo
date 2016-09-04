@@ -63,9 +63,15 @@ var maps={
 		map: null,
 		options: {
 			center: defaultLocation,
-			layers: [layers.openStreetMap,layers.googleStreets],
+			layers: layers.openStreetMap,
 			zoom: 15,
 			attributionControl: false,
+		},
+		layersControl: {
+			"OpenStreetMap": layers.openStreetMap,
+			"Google Streets": layers.googleStreets,
+			"Google Satellite": layers.googleSat,
+			"Google Terrain": layers.googleTerrain,
 		}
 	},
 	mapsat: {
@@ -113,6 +119,9 @@ function initMaps() {
 				mh.map.on(evt,mh.events[evt]);
 	
 			}
+		}
+		if (mh.layersControl) {
+			L.control.layers(mh.layersControl).addTo(mh.map);
 		}
 	}
 	adjustCar(); // initial call
