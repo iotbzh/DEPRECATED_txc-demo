@@ -72,7 +72,17 @@ var maps={
 			"Google Streets": layers.googleStreets,
 			"Google Satellite": layers.googleSat,
 			"Google Terrain": layers.googleTerrain,
+		},
+/*		path: {
+			stroke: true,
+			color: "#0f0",
+			weight: "3",
+			opacity: "0.5",
+			lineCap: "round",
+			lineJoin: "round",
+			smoothFactor: 1.0,
 		}
+*/
 	},
 	mapsat: {
 		map: null,
@@ -123,6 +133,11 @@ function initMaps() {
 		if (mh.layersControl) {
 			L.control.layers(mh.layersControl).addTo(mh.map);
 		}
+		if (mh.path) {
+			mh.path=L.Polyline([mh.map.getCenter(),mh.map.getCenter()],mh.path);
+//			mh.path.setLatLngs([]);
+			mh.path.addTo(mh.map);
+		}
 	}
 	adjustCar(); // initial call
 	setMapsLockState(false);
@@ -133,8 +148,12 @@ function initMaps() {
 function setMapsLockState(b) {
 	// maps shouldn't be draggable while trace is active
 	for (var id in maps) {
-		if (b) 
+		if (b) {
 			maps[id].map.dragging.disable();
+			if (maps[id].path) {
+				maps[id].path.setLatLngs([maps[id].map.getCenter(),maps[id].map.getCenter()]);
+			}
+		}
 		else
 			maps[id].map.dragging.enable();
 	}
@@ -159,7 +178,8 @@ function adjustCar() {
 	var zl=maps.mapsat.map.getZoom();
 	var scale=0.125*zl-1.375;
 	if (scale<0.5) scale=0.5;
-	wdgCar.style = "transform: scale("+scale+") translate(-50%,-68%) rotate("+heading+"deg)";
+	var trans="scale("+scale+") translate(-50%,-68%) rotate("+heading+"deg)";
+	$(wdgCar).css("transform",trans);
 	//console.log("zoom:"+zl+" heading:"+heading+" scale:"+scale);
 }
 
@@ -182,6 +202,9 @@ function updatePosition() {
 			if (mh.marker) {
 				mh.marker.setLatLng([curLat,curLon]);
 				mh.marker.setRotationAngle(heading);
+			}
+			if (mh.path) {
+				mh.path.addLatLng([curLat,curLon]);
 			}
 		}
 	}
