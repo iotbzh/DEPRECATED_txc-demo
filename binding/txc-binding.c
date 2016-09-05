@@ -15,7 +15,6 @@
 
 struct signal {
 	const char *name;
-	int index;
 	struct afb_event event;
 };
 
@@ -305,7 +304,7 @@ static void subscribe_unsubscribe(struct afb_req request, int subscribe)
 			if (subscribe_unsubscribe_name(request, subscribe, json_object_get_string(x)))
 				ok++;
 		}
-		ok = ok == n;
+		ok = (ok == n);
 	}
 
 	/* send the report */
