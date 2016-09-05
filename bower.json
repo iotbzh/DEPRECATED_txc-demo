@@ -6,6 +6,14 @@
 	"dependencies": {
 		"bootstrap-sass": "~3",
 		"leaflet": "~1.0.0",
-		"simplegauges": "https://github.com/SignalK/simplegauges.git"
+		"steelseries": "https://github.com/HanSolo/SteelSeries-Canvas.git"
+	},
+	"overrides": {
+		"steelseries": {
+			"main": [
+				"tween.js",
+				"steelseries.js"
+			]
+		}
 	}
 }

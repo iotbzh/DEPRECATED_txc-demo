@@ -21,12 +21,15 @@ var odoini,odo,odoprv;
 var fsrini,fsr,fsrprv;
 var con,cons,consa = [ ];
 var minspeed = 5;
-var wdgLat, wdgLon, wdgVsp, wdgVspeed, wdgEsp, wdgEspeed, wdgView1, wdgHea, wdgCar;
+var wdgLat, wdgLon;
+//var wdgVsp, wdgVspeed, wdgEsp, wdgEspeed;
+var wdgView1, wdgHea, wdgCar;
 var wdgFue, wdgGpred, wdgGpblack;
 var wdgOdo, wdgFsr, wdgCon, wdgConX;
 var conscale = 15;
 var condt = 60000;
 
+// leaflet maps
 var layers={
 	googleStreets: L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
 		minZoom: 1,
@@ -55,7 +58,6 @@ var layers={
 	})
 };
 
-// leaflet map
 var defaultLocation=[47.6243678,-2.7789165];
 L.Icon.Default.imagePath="/images";
 var maps={
@@ -78,10 +80,10 @@ var maps={
 			color: "blue",
 			weight: "6",
 			opacity: "0.9",
-/*			lineCap: "round",
+			lineCap: "round",
 			lineJoin: "round",
 			smoothFactor: 0.5,
-*/		}
+		}
 	},
 	mapsat: {
 		map: null,
@@ -117,6 +119,7 @@ function initMaps() {
 		}
 		if (mh.path) {
 			mh.path=L.polyline([],mh.path); 
+			// TODO: use multicolor lines: https://github.com/hgoebl/Leaflet.MultiOptionsPolyline
 			mh.path.addTo(mh.map);
 		}
 	}
@@ -192,6 +195,71 @@ function updatePosition() {
 	}
 } 
 
+/* gauges creation */
+var gauges={};
+function initGauges() {
+	gauges.speed = new steelseries.Radial('speedGauge', {
+		gaugeType: steelseries.GaugeType.TYPE4,
+		frameDesign: steelseries.FrameDesign.BLACK_METAL,
+		backgroundColor: steelseries.BackgroundColor.CARBON,
+		size: 200,
+		titleString: "Speed",
+		unitString: "Km/h",
+		lcdVisible: true,
+		maxValue: 250,
+		maxMeasuredValue: 0,
+		maxMeasuredValueVisible: true,
+		thresholdVisible: false,
+		ledVisible: false,
+		pointerType: steelseries.PointerType.TYPE11,
+		useOdometer: true,
+		odometerParams: {
+			digits: 6
+		}
+	});
+
+	gauges.rpm = new steelseries.Radial('rpmGauge', {
+		gaugeType: steelseries.GaugeType.TYPE4,
+		frameDesign: steelseries.FrameDesign.BLACK_METAL,
+		backgroundColor: steelseries.BackgroundColor.CARBON,
+		size: 150,
+		titleString: "RPM",
+		unitString: "x1000",
+		lcdVisible: false,
+		maxValue: 8,
+		maxMeasuredValue: 0,
+		maxMeasuredValueVisible: false,
+		section: [
+			steelseries.Section(6, 8, 'rgba(255, 0, 0, 0.5)')
+		],
+		thresholdVisible: false,
+		ledVisible: false,
+		pointerType: steelseries.PointerType.TYPE11
+	});
+
+	gauges.fuel = new steelseries.Radial('fuelGauge', {
+		gaugeType: steelseries.GaugeType.TYPE4,
+		frameDesign: steelseries.FrameDesign.BLACK_METAL,
+		backgroundColor: steelseries.BackgroundColor.CARBON,
+		size: 150,
+		titleString: "Fuel Rate",
+		unitString: "L/100 Km",
+		lcdVisible: false,
+		maxValue: 40,
+		maxMeasuredValue: 0,
+		maxMeasuredValueVisible: true,
+		section: [
+			steelseries.Section(0, 5, 'rgba(0, 255, 0, 0.5)'),
+			steelseries.Section(5, 10, 'rgba(255, 255, 0, 0.5)'),
+			steelseries.Section(10, 15, 'rgba(255, 128, 0, 0.5)'),
+			steelseries.Section(15, 40, 'rgba(255, 0, 0, 0.5)')
+		],
+		thresholdVisible: false,
+		ledVisible: false,
+		pointerType: steelseries.PointerType.TYPE11
+	});
+}
+
 /* only update position when 2 coords have been received, whatever the order */
 var coordUpdated=false;
 
@@ -215,12 +283,14 @@ function gotLongitude(obj) {
 
 function gotVehicleSpeed(obj) {
 	vspeed = Math.round(obj.data.value);
-	wdgVsp.innerHTML = wdgVspeed.innerHTML = String(vspeed);
+	//wdgVsp.innerHTML = wdgVspeed.innerHTML = String(vspeed);
+	gauges.speed.setValueAnimated(vspeed);
 }
 
 function gotEngineSpeed(obj) {
 	espeed = Math.round(obj.data.value);
-	wdgEsp.innerHTML = wdgEspeed.innerHTML = String(espeed);
+	//wdgEsp.innerHTML = wdgEspeed.innerHTML = String(espeed);
+	gauges.rpm.setValueAnimated(espeed/1000);
 }
 
 function gotFuelLevel(obj) {
@@ -264,6 +334,7 @@ function updateConsumation() {
 	if ((odo - odoprv) > 0.075 && fsr != fsrprv) {
 		con = Math.round(1000 * (fsr - fsrprv) / (odo - odoprv)) / 10;
 		wdgCon.innerHTML = con;
+		gauges.fuel.setValueAnimated(con);
 		var t = Date.now();
 		if (cons === undefined) {
 			cons = { t: t, f: fsrprv, o: odoprv };
@@ -280,6 +351,7 @@ function gotOdometer(obj) {
 	odo = obj.data.value;
 	wdgOdo.innerHTML = Math.round(odo * 1000) / 1000;
 	updateConsumation();
+	gauges.speed.setOdoValue(odo);
 }
 
 function gotFuelSince(obj) {
@@ -308,8 +380,8 @@ function gotStart(obj) {
 
 	wdgFsr.innerHTML = wdgOdo.innerHTML = wdgCon.innerHTML = 
 	wdgLat.innerHTML = wdgLon.innerHTML =
-	wdgVsp.innerHTML = wdgVspeed.innerHTML =
-	wdgEsp.innerHTML = wdgEspeed.innerHTML =
+	//wdgVsp.innerHTML = wdgVspeed.innerHTML =
+	//wdgEsp.innerHTML = wdgEspeed.innerHTML =
 	wdgHea.innerHTML = wdgFue.innerHTML = "?";
 	for (var i = 0 ; i < 9 ; i++) {
 		wdgConX[i].style.height = "0%";
@@ -396,10 +468,10 @@ function doStop() {
 $(function() {
 	wdgLat = document.getElementById("lat");
 	wdgLon = document.getElementById("lon");
-	wdgVsp = document.getElementById("vsp");
-	wdgVspeed = document.getElementById("vspeed");
-	wdgEsp = document.getElementById("esp");
-	wdgEspeed = document.getElementById("espeed");
+	//wdgVsp = document.getElementById("vsp");
+	//wdgVspeed = document.getElementById("vspeed");
+	//wdgEsp = document.getElementById("esp");
+	//wdgEspeed = document.getElementById("espeed");
 	wdgView1 = document.getElementById("view1");
 	wdgHea = document.getElementById("hea");
 	wdgCar = document.getElementById("car");
@@ -423,7 +495,9 @@ $(function() {
 		];
 	
 	initMaps();
+	initGauges();
 
 	doConnect();
 });
+
 

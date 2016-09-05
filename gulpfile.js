@@ -62,7 +62,7 @@ var nodeopts = config.DEBUG !== undefined ? '--debug='+config.DEBUG : '';
 var pipes = {};
 
 pipes.orderedVendorScripts = function() {
-    return plugins.order(['jquery.js', 'bootstrap.js','leaflet-src.js']);
+    return plugins.order(['jquery.js', 'bootstrap.js','leaflet-src.js','tween.js','steelseries.js']);
 };
 
 pipes.minifiedFileName = function() {
