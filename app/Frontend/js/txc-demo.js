@@ -307,8 +307,18 @@ function initGauges() {
 
 function clearGauges() {
 	for (var g in gauges) {
-		//gauges[g].setValueAnimated(0);
-		gauges[g].setValue(0);
+		switch(g) {
+			case "clock":
+				gauges[g].setValue("-");
+				break;
+			case "speed":
+				gauges[g].setValue(0);
+				gauges[g].setOdoValue(0);
+				break;
+			default:
+				gauges[g].setValue(0);
+				break;
+		}
 	}
 }
 
