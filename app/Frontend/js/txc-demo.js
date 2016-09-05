@@ -73,16 +73,15 @@ var maps={
 			"Google Satellite": layers.googleSat,
 			"Google Terrain": layers.googleTerrain,
 		},
-/*		path: {
+		path: {
 			stroke: true,
-			color: "#0f0",
-			weight: "3",
-			opacity: "0.5",
-			lineCap: "round",
+			color: "blue",
+			weight: "6",
+			opacity: "0.9",
+/*			lineCap: "round",
 			lineJoin: "round",
-			smoothFactor: 1.0,
-		}
-*/
+			smoothFactor: 0.5,
+*/		}
 	},
 	mapsat: {
 		map: null,
@@ -98,32 +97,15 @@ var maps={
 			zoomend: adjustCar,
 			move: adjustCar,
 			resize: adjustCar,
-		},
-/*		icon: {
-			iconUrl: '/images/car-top-view.png',
-			iconSize: [25,48],
-			iconAnchor: [12,33],
-		},
-		marker: {
-			rotationAngle: heading,
-			rotationOrigin: "12px 33px"
 		}
-*/
 	}
 };
+var mapslocked=null;
 
 function initMaps() {
 	for (var id in maps) {
 		var mh=maps[id];
 		mh.map=L.map(id,mh.options);
-		if (mh.marker) {
-			mh.marker=L.marker(mh.map.getCenter(), mh.marker);
-			mh.marker.addTo(mh.map);
-			if (mh.icon) {
-				mh.icon=L.icon(mh.icon);
-				mh.marker.setIcon(mh.icon);
-			}
-		}
 		if (mh.events) {
 			for (var evt in mh.events) {
 				mh.map.on(evt,mh.events[evt]);
@@ -134,8 +116,7 @@ function initMaps() {
 			L.control.layers(mh.layersControl).addTo(mh.map);
 		}
 		if (mh.path) {
-			mh.path=L.Polyline([mh.map.getCenter(),mh.map.getCenter()],mh.path);
-//			mh.path.setLatLngs([]);
+			mh.path=L.polyline([],mh.path); 
 			mh.path.addTo(mh.map);
 		}
 	}
@@ -146,12 +127,16 @@ function initMaps() {
 }
 
 function setMapsLockState(b) {
+	// do nothing if already in good state
+	if (mapslocked === b) return;
+	mapslocked=b;
+
 	// maps shouldn't be draggable while trace is active
 	for (var id in maps) {
 		if (b) {
 			maps[id].map.dragging.disable();
 			if (maps[id].path) {
-				maps[id].path.setLatLngs([maps[id].map.getCenter(),maps[id].map.getCenter()]);
+				maps[id].path.setLatLngs([]);
 			}
 		}
 		else
@@ -166,6 +151,7 @@ function setMapsLockState(b) {
 	else {
 		$(wdgCar).addClass("invisible");
 	}
+
 }
 
 function adjustCar() {
@@ -199,10 +185,6 @@ function updatePosition() {
 				duration: 1.0,
 				easeLinearity: 1
 			});
-			if (mh.marker) {
-				mh.marker.setLatLng([curLat,curLon]);
-				mh.marker.setRotationAngle(heading);
-			}
 			if (mh.path) {
 				mh.path.addLatLng([curLat,curLon]);
 			}
@@ -210,19 +192,27 @@ function updatePosition() {
 	}
 } 
 
+/* only update position when 2 coords have been received, whatever the order */
+var coordUpdated=false;
+
 function gotLatitude(obj) {
 	prvLat = curLat;
 	curLat = obj.data.value;
 	wdgLat.innerHTML = String(curLat);
-	updatePosition();
+	if (coordUpdated)
+		updatePosition();
+	coordUpdated=!coordUpdated;
 }
 
 function gotLongitude(obj) {
 	prvLon = curLon;
 	curLon = obj.data.value;
 	wdgLon.innerHTML = String(curLon);
-	updatePosition();
+	if (coordUpdated)
+		updatePosition();
+	coordUpdated=!coordUpdated;
 }
+
 function gotVehicleSpeed(obj) {
 	vspeed = Math.round(obj.data.value);
 	wdgVsp.innerHTML = wdgVspeed.innerHTML = String(vspeed);
