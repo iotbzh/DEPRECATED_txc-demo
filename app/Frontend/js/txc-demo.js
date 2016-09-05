@@ -407,6 +407,29 @@ function gotStop(obj) {
 	setMapsLockState(false);
 }
 
+var msgcnt=0;
+var msgprv=0;
+var msgprvts=0;
+function gotAny(obj) { 
+	if (obj.event != "txc/STOP") {
+		document.body.className = "started";
+		setMapsLockState(true);
+	}
+	msgcnt++;
+}
+
+function updateMsgRate() {
+	var now=+new Date();
+	if (msgprvts) {
+		var dt=now-msgprvts;
+		msgrate=Math.round((msgcnt-msgprv)*10000/dt)/10;
+		wdgMsg.innerHTML=String(msgrate);
+	}
+
+	msgprv=msgcnt;
+	msgprvts=now;
+}
+
 function gotStat(obj) {
 	wdgStat.innerHTML = obj.data;
 }
@@ -443,12 +466,7 @@ function onSubscribed() {
 	ws.onevent("txc/vehicle_speed", gotVehicleSpeed);
 	ws.onevent("txc/START", gotStart);
 	ws.onevent("txc/STOP", gotStop);
-	ws.onevent("txc",function(obj) { 
-		if (obj.event != "txc/STOP") {
-			document.body.className = "started";
-			setMapsLockState(true);
-		}
-	});
+	ws.onevent("txc",gotAny);
 }
 
 function replyok(obj) {
@@ -493,6 +511,7 @@ $(function() {
 	wdgOdo = document.getElementById("odo");
 	wdgFsr = document.getElementById("fsr");
 	wdgStat = document.getElementById("stat");
+	wdgMsg = document.getElementById("msg");
 	wdgCon = document.getElementById("con");
 	wdgConX = [
 			document.getElementById("con1"),
@@ -510,6 +529,9 @@ $(function() {
 	initGauges();
 
 	doConnect();
+
+	// init interval to compute message rate
+	setInterval(updateMsgRate,250);
 });
 
 
