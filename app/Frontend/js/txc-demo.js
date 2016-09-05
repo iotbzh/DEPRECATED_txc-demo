@@ -21,8 +21,8 @@ var odoini,odo,odoprv;
 var fsrini,fsr,fsrprv;
 var con,cons,consa = [ ];
 var minspeed = 5;
-var wdgLat, wdgLon;
-//var wdgVsp, wdgVspeed, wdgEsp, wdgEspeed;
+var wdgLat, wdgLon, wdgVsp, wdgEsp;
+//var wdgVspeed, wdgEspeed;
 var wdgView1, wdgHea, wdgCar;
 var wdgFue, wdgGpred, wdgGpblack;
 var wdgOdo, wdgFsr, wdgCon, wdgConX;
@@ -155,6 +155,8 @@ function setMapsLockState(b) {
 		$(wdgCar).addClass("invisible");
 	}
 
+	// clear all gauges
+	clearGauges();
 }
 
 function adjustCar() {
@@ -260,6 +262,13 @@ function initGauges() {
 	});
 }
 
+function clearGauges() {
+	for (var g in gauges) {
+		//gauges[g].setValueAnimated(0);
+		gauges[g].setValue(0);
+	}
+}
+
 /* only update position when 2 coords have been received, whatever the order */
 var coordUpdated=false;
 
@@ -283,14 +292,16 @@ function gotLongitude(obj) {
 
 function gotVehicleSpeed(obj) {
 	vspeed = Math.round(obj.data.value);
-	//wdgVsp.innerHTML = wdgVspeed.innerHTML = String(vspeed);
-	gauges.speed.setValueAnimated(vspeed);
+	wdgVsp.innerHTML = /* wdgVspeed.innerHTML = */ String(vspeed);
+	//gauges.speed.setValueAnimated(vspeed);
+	gauges.speed.setValue(vspeed);
 }
 
 function gotEngineSpeed(obj) {
 	espeed = Math.round(obj.data.value);
-	//wdgEsp.innerHTML = wdgEspeed.innerHTML = String(espeed);
-	gauges.rpm.setValueAnimated(espeed/1000);
+	wdgEsp.innerHTML = /* wdgEspeed.innerHTML = */ String(espeed);
+	//gauges.rpm.setValueAnimated(espeed/1000);
+	gauges.rpm.setValue(espeed/1000);
 }
 
 function gotFuelLevel(obj) {
@@ -334,7 +345,8 @@ function updateConsumation() {
 	if ((odo - odoprv) > 0.075 && fsr != fsrprv) {
 		con = Math.round(1000 * (fsr - fsrprv) / (odo - odoprv)) / 10;
 		wdgCon.innerHTML = con;
-		gauges.fuel.setValueAnimated(con);
+		//gauges.fuel.setValueAnimated(con);
+		gauges.fuel.setValue(con);
 		var t = Date.now();
 		if (cons === undefined) {
 			cons = { t: t, f: fsrprv, o: odoprv };
@@ -380,8 +392,8 @@ function gotStart(obj) {
 
 	wdgFsr.innerHTML = wdgOdo.innerHTML = wdgCon.innerHTML = 
 	wdgLat.innerHTML = wdgLon.innerHTML =
-	//wdgVsp.innerHTML = wdgVspeed.innerHTML =
-	//wdgEsp.innerHTML = wdgEspeed.innerHTML =
+	wdgVsp.innerHTML = /*wdgVspeed.innerHTML = */
+	wdgEsp.innerHTML = /*wdgEspeed.innerHTML = */
 	wdgHea.innerHTML = wdgFue.innerHTML = "?";
 	for (var i = 0 ; i < 9 ; i++) {
 		wdgConX[i].style.height = "0%";
@@ -468,9 +480,9 @@ function doStop() {
 $(function() {
 	wdgLat = document.getElementById("lat");
 	wdgLon = document.getElementById("lon");
-	//wdgVsp = document.getElementById("vsp");
+	wdgVsp = document.getElementById("vsp");
 	//wdgVspeed = document.getElementById("vspeed");
-	//wdgEsp = document.getElementById("esp");
+	wdgEsp = document.getElementById("esp");
 	//wdgEspeed = document.getElementById("espeed");
 	wdgView1 = document.getElementById("view1");
 	wdgHea = document.getElementById("hea");
