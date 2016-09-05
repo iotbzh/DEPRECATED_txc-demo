@@ -209,7 +209,7 @@ function initGauges() {
 		unitString: "Km/h",
 		lcdVisible: true,
 		niceScale: true,
-		maxValue: 250,
+		maxValue: 200,
 		maxMeasuredValue: 0,
 		maxMeasuredValueVisible: true,
 		thresholdVisible: false,
@@ -244,7 +244,7 @@ function initGauges() {
 		pointerType: steelseries.PointerType.TYPE11
 	});
 
-	gauges.fuel = new steelseries.Radial('fuelGauge', {
+	gauges.fuel = new steelseries.RadialBargraph('fuelGauge', {
 		gaugeType: steelseries.GaugeType.TYPE4,
 		frameDesign: steelseries.FrameDesign.BLACK_METAL,
 		backgroundColor: steelseries.BackgroundColor.CARBON,
@@ -255,15 +255,31 @@ function initGauges() {
 		lcdColor: steelseries.LcdColor.STANDARD,
 		lcdDecimals: 1,
 		niceScale: true,
+		minValue: 0,
 		maxValue: conscale,
-		maxMeasuredValue: 0,
+		minMeasuredValue: 0,
+		maxMeasuredValue: conscale,
 		maxMeasuredValueVisible: true,
-		section: [
-			steelseries.Section(0, 6, 'rgba(0, 255, 0, 0.5)'),
-			steelseries.Section(6, 12, 'rgba(255, 255, 0, 0.5)'),
-			steelseries.Section(12, 20, 'rgba(255, 128, 0, 0.5)'),
-			steelseries.Section(20, conscale, 'rgba(255, 0, 0, 0.5)')
+/*		section: [
+			steelseries.Section(0, 8, 'rgba(0, 255, 0, 0.5)'),
+			steelseries.Section(8, 16, 'rgba(255, 255, 0, 0.5)'),
+			steelseries.Section(16, 26, 'rgba(255, 128, 0, 0.5)'),
+			steelseries.Section(26, conscale, 'rgba(255, 0, 0, 0.5)')
 		],
+*/
+		valueGradient: new steelseries.gradientWrapper(
+			0,
+			conscale,
+			[ 0, 8/conscale, 16/conscale, 26/conscale, 1],
+			[ 
+				new steelseries.rgbaColor(0, 255, 0, 1),
+				new steelseries.rgbaColor(255, 255, 0, 1),
+				new steelseries.rgbaColor(255, 128, 0, 1),
+				new steelseries.rgbaColor(255, 0, 0, 1),
+				new steelseries.rgbaColor(255, 0, 0, 1)
+			]
+		),
+		useValueGradient: true,
 		thresholdVisible: false,
 		ledVisible: false,
 		pointerType: steelseries.PointerType.TYPE11

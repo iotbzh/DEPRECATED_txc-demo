@@ -6,7 +6,7 @@
 	"dependencies": {
 		"bootstrap-sass": "~3",
 		"leaflet": "~1.0.0",
-		"steelseries": "https://github.com/HanSolo/SteelSeries-Canvas.git"
+		"steelseries": "https://github.com/iotbzh/SteelSeries-Canvas.git"
 	},
 	"overrides": {
 		"steelseries": {
