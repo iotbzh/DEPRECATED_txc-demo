@@ -26,7 +26,7 @@ var wdgLat, wdgLon, wdgVsp, wdgEsp;
 var wdgView1, wdgHea, wdgCar;
 var wdgFue, wdgGpred, wdgGpblack;
 var wdgOdo, wdgFsr, wdgCon, wdgConX;
-var conscale = 15;
+var conscale = 40;
 var condt = 60000;
 
 // leaflet maps
@@ -247,14 +247,14 @@ function initGauges() {
 		titleString: "Fuel Rate",
 		unitString: "L/100 Km",
 		lcdVisible: false,
-		maxValue: 40,
+		maxValue: conscale,
 		maxMeasuredValue: 0,
 		maxMeasuredValueVisible: true,
 		section: [
-			steelseries.Section(0, 5, 'rgba(0, 255, 0, 0.5)'),
-			steelseries.Section(5, 10, 'rgba(255, 255, 0, 0.5)'),
-			steelseries.Section(10, 15, 'rgba(255, 128, 0, 0.5)'),
-			steelseries.Section(15, 40, 'rgba(255, 0, 0, 0.5)')
+			steelseries.Section(0, 6, 'rgba(0, 255, 0, 0.5)'),
+			steelseries.Section(6, 12, 'rgba(255, 255, 0, 0.5)'),
+			steelseries.Section(12, 20, 'rgba(255, 128, 0, 0.5)'),
+			steelseries.Section(20, conscale, 'rgba(255, 0, 0, 0.5)')
 		],
 		thresholdVisible: false,
 		ledVisible: false,
