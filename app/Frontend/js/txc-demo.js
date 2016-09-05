@@ -10,7 +10,7 @@ var afb = new AFB("api"/*root*/, urlParams.token[0]);
 var ws;
 var curLat,prvLat;
 var curLon,prvLon;
-var vspeed = 0, espeed = 0;
+var vspeed = 0, espeed = 0, torque = 0;
 var heading = 0;
 var R2D = 180.0 / Math.PI;
 var D2R = Math.PI / 180.0;
@@ -21,7 +21,7 @@ var odoini,odo,odoprv;
 var fsrini,fsr,fsrprv;
 var con,cons,consa = [ ];
 var minspeed = 5;
-var wdgClk, wdgLat, wdgLon, wdgVsp, wdgEsp;
+var wdgClk, wdgLat, wdgLon, wdgVsp, wdgEsp, wdgTrq;
 //var wdgVspeed, wdgEspeed;
 var wdgView1, wdgHea, wdgCar;
 var wdgFue, wdgGpred, wdgGpblack;
@@ -208,6 +208,7 @@ function initGauges() {
 		titleString: "Speed",
 		unitString: "Km/h",
 		lcdVisible: true,
+		niceScale: true,
 		maxValue: 250,
 		maxMeasuredValue: 0,
 		maxMeasuredValueVisible: true,
@@ -228,6 +229,7 @@ function initGauges() {
 		titleString: "RPM",
 		unitString: "x1000",
 		lcdVisible: false,
+		niceScale: true,
 		maxValue: 8,
 		maxMeasuredValue: 0,
 		maxMeasuredValueVisible: false,
@@ -252,6 +254,7 @@ function initGauges() {
 		lcdVisible: true,
 		lcdColor: steelseries.LcdColor.STANDARD,
 		lcdDecimals: 1,
+		niceScale: true,
 		maxValue: conscale,
 		maxMeasuredValue: 0,
 		maxMeasuredValueVisible: true,
@@ -271,6 +274,33 @@ function initGauges() {
 		height: 50,
 		valuesNumeric: false,
 		value: "",
+	});
+	
+	gauges.torque = new steelseries.Radial('torqueGauge', {
+		gaugeType: steelseries.GaugeType.TYPE2,
+		frameDesign: steelseries.FrameDesign.BLACK_METAL,
+		backgroundColor: steelseries.BackgroundColor.CARBON,
+		size: 200,
+		titleString: "Torque",
+		unitString: "Nm",
+		lcdVisible: false,
+		niceScale: true,
+		minValue: -500,
+		maxValue: 500,
+		maxMeasuredValue: 0,
+		maxMeasuredValueVisible: false,
+		section: [
+			steelseries.Section(-500, 0, 'rgba(0, 255, 0, 0.7)'),
+			steelseries.Section(0, 1500, 'rgba(255, 128, 0, 0.7)')
+		],
+		area: [
+			steelseries.Section(-500, 0, 'rgba(0, 255, 0, 0.3)'),
+			steelseries.Section(0, 1500, 'rgba(255, 128, 0, 0.3)')
+		],
+		threshold: 0,
+		thresholdVisible: true,
+		ledVisible: false,
+		pointerType: steelseries.PointerType.TYPE4
 	});
 
 }
@@ -308,6 +338,12 @@ function gotVehicleSpeed(obj) {
 	wdgVsp.innerHTML = /* wdgVspeed.innerHTML = */ String(vspeed);
 	//gauges.speed.setValueAnimated(vspeed);
 	gauges.speed.setValue(vspeed);
+}
+
+function gotTorque(obj) {
+	torque=Math.round(obj.data.value);
+	wdgTrq.innerHTML=String(torque);
+	gauges.torque.setValue(torque);
 }
 
 function gotEngineSpeed(obj) {
@@ -481,6 +517,7 @@ function onOpen() {
 			"latitude",
 			"odometer",
 			"vehicle_speed",
+			"torque_at_transmission",
 			"START",
 			"STOP"]}, onSubscribed, onAbort);
 	ws.call("stat/subscribe", true);
@@ -497,6 +534,7 @@ function onSubscribed() {
 	ws.onevent("txc/latitude", gotLatitude);
 	ws.onevent("txc/odometer", gotOdometer);
 	ws.onevent("txc/vehicle_speed", gotVehicleSpeed);
+	ws.onevent("txc/torque_at_transmission", gotTorque);
 	ws.onevent("txc/START", gotStart);
 	ws.onevent("txc/STOP", gotStop);
 	ws.onevent("txc",gotAny);
@@ -536,6 +574,7 @@ $(function() {
 	//wdgVspeed = document.getElementById("vspeed");
 	wdgEsp = document.getElementById("esp");
 	//wdgEspeed = document.getElementById("espeed");
+	wdgTrq = document.getElementById("trq");
 	wdgView1 = document.getElementById("view1");
 	wdgHea = document.getElementById("hea");
 	wdgCar = document.getElementById("car");
