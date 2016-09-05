@@ -21,7 +21,7 @@ var odoini,odo,odoprv;
 var fsrini,fsr,fsrprv;
 var con,cons,consa = [ ];
 var minspeed = 5;
-var wdgLat, wdgLon, wdgVsp, wdgEsp;
+var wdgClk, wdgLat, wdgLon, wdgVsp, wdgEsp;
 //var wdgVspeed, wdgEspeed;
 var wdgView1, wdgHea, wdgCar;
 var wdgFue, wdgGpred, wdgGpblack;
@@ -232,7 +232,10 @@ function initGauges() {
 		maxMeasuredValue: 0,
 		maxMeasuredValueVisible: false,
 		section: [
-			steelseries.Section(6, 8, 'rgba(255, 0, 0, 0.5)')
+			steelseries.Section(6, 8, 'rgba(255, 0, 0, 0.7)')
+		],
+		area: [
+			steelseries.Section(6, 8, 'rgba(255, 0, 0, 0.3)')
 		],
 		thresholdVisible: false,
 		ledVisible: false,
@@ -246,7 +249,9 @@ function initGauges() {
 		size: 200,
 		titleString: "Fuel Rate",
 		unitString: "L/100 Km",
-		lcdVisible: false,
+		lcdVisible: true,
+		lcdColor: steelseries.LcdColor.STANDARD,
+		lcdDecimals: 1,
 		maxValue: conscale,
 		maxMeasuredValue: 0,
 		maxMeasuredValueVisible: true,
@@ -260,6 +265,14 @@ function initGauges() {
 		ledVisible: false,
 		pointerType: steelseries.PointerType.TYPE11
 	});
+
+	gauges.clock = new steelseries.DisplaySingle('clockGauge', {
+		width: 170,
+		height: 50,
+		valuesNumeric: false,
+		value: "",
+	});
+
 }
 
 function clearGauges() {
@@ -391,7 +404,7 @@ function gotStart(obj) {
 	consa = [ ];
 
 	wdgFsr.innerHTML = wdgOdo.innerHTML = wdgCon.innerHTML = 
-	wdgLat.innerHTML = wdgLon.innerHTML =
+	wdgClk.innerHTML = wdgLat.innerHTML = wdgLon.innerHTML =
 	wdgVsp.innerHTML = /*wdgVspeed.innerHTML = */
 	wdgEsp.innerHTML = /*wdgEspeed.innerHTML = */
 	wdgHea.innerHTML = wdgFue.innerHTML = "?";
@@ -416,6 +429,7 @@ function gotAny(obj) {
 		setMapsLockState(true);
 	}
 	msgcnt++;
+	updateClock(obj.data.timestamp);
 }
 
 function updateMsgRate() {
@@ -428,6 +442,25 @@ function updateMsgRate() {
 
 	msgprv=msgcnt;
 	msgprvts=now;
+}
+
+function updateClock(ts) {
+	var h=Math.floor(ts/3600);
+	ts-=h*3600;
+	var m=Math.floor(ts/60);
+	ts-=m*60;
+	var s=Math.floor(ts);
+	ts-=s;
+
+	var chrono=
+		('0'+h).slice(-2)+":"+
+		('0'+m).slice(-2)+":"+
+		('0'+s).slice(-2)+"."+
+		Math.floor(ts*10)
+	;
+		
+	wdgClk.innerHTML=chrono;
+	gauges.clock.setValue(chrono+" ");
 }
 
 function gotStat(obj) {
@@ -496,6 +529,7 @@ function doStop() {
 }
 
 $(function() {
+	wdgClk = document.getElementById("clk");
 	wdgLat = document.getElementById("lat");
 	wdgLon = document.getElementById("lon");
 	wdgVsp = document.getElementById("vsp");
