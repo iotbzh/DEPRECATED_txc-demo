@@ -319,6 +319,16 @@ function initGauges() {
 		pointerType: steelseries.PointerType.TYPE4
 	});
 
+	/* adjust cluster background size upon resize */
+	// TODO: could be doable through CSS, but a bit tricky
+	function adjustCluster() {
+		var qh=$("#quad1").outerHeight();
+		var sh=$("#speedGauge").outerHeight();
+		var pct=Math.ceil((1000*sh/qh))/10+1;
+		$('#cluster').css("height",pct+"%");
+	}
+	$(window).resize(adjustCluster);
+	adjustCluster();
 }
 
 function clearGauges() {
@@ -623,7 +633,7 @@ $(function() {
 			document.getElementById("con8"),
 			document.getElementById("con9")
 		];
-	
+
 	initMaps();
 	initGauges();
 
@@ -632,5 +642,4 @@ $(function() {
 	// init interval to compute message rate
 	setInterval(updateMsgRate,250);
 });
-
 

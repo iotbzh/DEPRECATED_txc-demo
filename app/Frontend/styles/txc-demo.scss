@@ -42,6 +42,7 @@ html,body {
 	bottom:0;
 	top: 50px;
 	padding:0;
+	overflow: hidden;
 }
 
 .quad {
@@ -67,7 +68,7 @@ html,body {
 	vertical-align: middle;
 }
 
-#quad1 { border-bottom-right-radius: 0; }
+#quad1 { border-bottom-right-radius: 0;}
 #quad2 { border-bottom-left-radius: 0; }
 #quad3 { border-top-right-radius: 0; overflow: auto; }
 #quad4 { border-top-left-radius: 0; }
@@ -96,11 +97,23 @@ html,body {
 #vspeed { position: absolute; top: 16px; width: 100px; color: cyan; font-size: 42px; }
 */
 
-#rpmGauge { position: absolute; bottom: -2%; left: 16%; width: 21%; }
-#speedGauge { position: absolute; bottom: -3%; left: 37%; width: 26%; }
-#fuelGauge { position: absolute; bottom: -2%; right: 16%; width: 21%; }
-#clockGauge { position: absolute; bottom: 10%; right: 1%; width: 14%; }
-#torqueGauge { position: absolute; bottom: -1%; left: 1%; width: 14%; }
+#cluster {
+	position: absolute;
+	bottom:0;
+	left:0;
+	right:0;
+	background: rgba(50,50,50,.4);
+	height: 43%;
+	border-top: 2px outset silver;
+	border-top-left-radius: 50%;
+	border-top-right-radius: 50%;
+}
+
+#torqueGauge	{ position: absolute; bottom: -2%; left: 1%; width: 14%; }
+#rpmGauge		{ position: absolute; bottom: -4%; left: 16%; width: 21%; }
+#speedGauge		{ position: absolute; bottom: -3%; left: 38%; width: 24%; }
+#fuelGauge		{ position: absolute; bottom: -4%; right: 16%; width: 21%; }
+#clockGauge		{ position: absolute; bottom: 30%;  right: 1%; width: 14%; }
 
 /* in quad 2 */
 #mapstreet {
