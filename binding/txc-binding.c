@@ -342,7 +342,7 @@ static void unsubscribe(struct afb_req request)
 
 // NOTE: this sample does not use session to keep test a basic as possible
 //       in real application most APIs should be protected with AFB_SESSION_CHECK
-static const struct afb_verb_v2 _afb_verbs_v2_txc_demo[] = {
+static const struct afb_verb_v2 _afb_verbs_v2_txc[] = {
 	{
 		.verb = "start",
 		.callback = start,
@@ -381,10 +381,10 @@ static const struct afb_verb_v2 _afb_verbs_v2_txc_demo[] = {
 };
 
 const struct afb_binding_v2 afbBindingV2 = {
-	.api = "txc_demo",
+	.api = "txc",
 	.specification = NULL,
 	.info = "",
-	.verbs = _afb_verbs_v2_txc_demo,
+	.verbs = _afb_verbs_v2_txc,
 	.preinit = NULL,
 	.init = NULL,
 	.onevent = NULL,

@@ -1,0 +1,151 @@
+{
+  "openapi": "3.0.0",
+  "$schema": "http://iot.bzh/download/openapi/schema-3.0/default-schema.json",
+  "info": {
+    "description": "",
+    "title": "txc-binding",
+    "version": "4.0",
+    "x-binding-c-generator": {
+      "api": "txc",
+      "version": 2,
+      "prefix": "",
+      "postfix": "",
+      "start": null ,
+      "onevent": null,
+      "init": null,
+      "scope": "",
+      "private": false
+    }
+  },
+  "servers": [
+    {
+      "url": "ws://{host}:{port}/api/monitor",
+      "description": "",
+      "variables": {
+        "host": {
+          "default": "localhost"
+        },
+        "port": {
+          "default": "1234"
+        }
+      },
+      "x-afb-events": [
+        {
+          "$ref": "#/components/schemas/afb-event"
+        }
+      ]
+    }
+  ],
+  "components": {
+    "schemas": {
+      "afb-reply": {
+        "$ref": "#/components/schemas/afb-reply-v2"
+      },
+      "afb-event": {
+        "$ref": "#/components/schemas/afb-event-v2"
+      },
+      "afb-reply-v2": {
+        "title": "Generic response.",
+        "type": "object",
+        "required": [ "jtype", "request" ],
+        "properties": {
+          "jtype": {
+            "type": "string",
+            "const": "afb-reply"
+          },
+          "request": {
+            "type": "object",
+            "required": [ "status" ],
+            "properties": {
+              "status": { "type": "string" },
+              "info": { "type": "string" },
+              "token": { "type": "string" },
+              "uuid": { "type": "string" },
+              "reqid": { "type": "string" }
+            }
+          },
+          "response": { "type": "object" }
+        }
+      },
+      "afb-event-v2": {
+        "type": "object",
+        "required": [ "jtype", "event" ],
+        "properties": {
+          "jtype": {
+            "type": "string",
+            "const": "afb-event"
+          },
+          "event": { "type": "string" },
+          "data": { "type": "object" }
+        }
+      }
+    },
+    "x-permissions": {
+        "monitor": {
+          "permission": "urn:AGL:permission:low-can:public:monitor"
+        }
+    },
+    "responses": {
+            "200": {
+              "description": "A complex object array response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/afb-reply"
+                  }
+                }
+            }
+          }
+    }
+  },
+  "paths": {
+    "/start": {
+      "description": "start to replay a trace filename",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "filename",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {"$ref": "#/components/responses/200"}
+        }
+      },
+      "/stop": {
+      "description": "stop to replay the current trace",
+      "responses": {
+          "200": {"$ref": "#/components/responses/200"}
+        }
+      },
+    "/subscribe": {
+      "description": "subscribes to the event of 'name'",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "event",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {"$ref": "#/components/responses/200"}
+        }
+      },
+    "/unsubscribe": {
+      "description": "Unsubscribes to the event of 'name'",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "event",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {"$ref": "#/components/responses/200"}
+        }
+      }
+    }
+  }

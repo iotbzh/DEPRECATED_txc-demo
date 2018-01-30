@@ -17,64 +17,9 @@
 # limitations under the License.
 ###########################################################################
 
-project(txc-demo)
+cmake_minimum_required(VERSION 3.5)
 
-cmake_minimum_required(VERSION 3.3)
-
-include(GNUInstallDirs)
-
-set(PROJECT_VERSION "0.1")
-set(PROJECT_ICON "icon_hybrid_html5_128.png")
-set(PROJECT_LIBDIR "lib")
-
-set(CMAKE_BUILD_TYPE Debug)
-
-###########################################################################
-
-link_libraries(-Wl,--as-needed -Wl,--gc-sections)
-
-add_compile_options(-Wall -Wextra -Wconversion)
-add_compile_options(-Wno-unused-parameter) # frankly not using a parameter does it care?
-add_compile_options(-Werror=maybe-uninitialized)
-add_compile_options(-Werror=implicit-function-declaration)
-add_compile_options(-ffunction-sections -fdata-sections)
-add_compile_options(-Wl,--as-needed -Wl,--gc-sections)
-add_compile_options(-fPIC)
-
-set(CMAKE_C_FLAGS_PROFILING    "-g -O0 -pg -Wp,-U_FORTIFY_SOURCE")
-set(CMAKE_C_FLAGS_DEBUG        "-g -O0 -ggdb -Wp,-U_FORTIFY_SOURCE")
-set(CMAKE_C_FLAGS_RELEASE      "-g -O2")
-set(CMAKE_C_FLAGS_CCOV         "-g -O2 --coverage")
-
-###########################################################################
-
-include(FindPkgConfig)
-
-pkg_check_modules(EXTRAS REQUIRED json-c afb-daemon)
-add_compile_options(${EXTRAS_CFLAGS})
-include_directories(${EXTRAS_INCLUDE_DIRS})
-link_libraries(${EXTRAS_LIBRARIES})
-
-###########################################################################
-# the binding for afb
-
-message(STATUS "Creation of ${PROJECT_NAME} for AFB-DAEMON")
-
-###############################################################
-add_library(txc-binding MODULE binding/txc-binding.c)
-set_target_properties(txc-binding PROPERTIES
-	PREFIX ""
-	LINK_FLAGS "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/binding/export.map"
-)
-
-###############################################################
-add_library(stat-binding MODULE binding/stat-binding.c)
-set_target_properties(stat-binding PROPERTIES
-	PREFIX ""
-	LINK_FLAGS "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/binding/export.map"
-)
-
-###############################################################
+include(${CMAKE_CURRENT_SOURCE_DIR}/conf.d/cmake/config.cmake)
 
 file(GLOB_RECURSE HTML5FILES app/*)
 
