@@ -31,6 +31,7 @@
 
 #include <systemd/sd-event.h>
 
+#define AFB_BINDING_VERSION 2
 #include <afb/afb-binding.h>
 #include <afb/afb-service-itf.h>
 
@@ -71,15 +72,15 @@ static struct status newer;
 static struct status diff;
 static struct afb_event event;
 
-/***************************************************************************************/
-/***************************************************************************************/
-/**                                                                                   **/
-/**                                                                                   **/
-/**       SECTION: BINDING VERBS IMPLEMENTATION                                       **/
-/**                                                                                   **/
-/**                                                                                   **/
-/***************************************************************************************/
-/***************************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/**                                                                          **/
+/**                                                                          **/
+/**       SECTION: BINDING VERBS IMPLEMENTATION                              **/
+/**                                                                          **/
+/**                                                                          **/
+/******************************************************************************/
+/******************************************************************************/
 
 static int read_status(int fd, struct status *s)
 {
@@ -131,7 +132,7 @@ static int emit(sd_event_source *src, int fd, uint32_t revents, void *userdata)
 	rc = read_status(fd_proc, &newer);
 	for(f = 0; f < (int)CPU_FIELD_COUNT ; f++)
 		diff.cpu[f] = newer.cpu[f] - older.cpu[f];
-	
+
 	u = 0;
 	s = 0;
 	i = 0;
@@ -171,9 +172,9 @@ static int start()
 				ts.it_value.tv_nsec = 0;
 				rc = timerfd_settime(fdt, 0, &ts, NULL);
 				if (rc >= 0) {
-					event = afb_daemon_make_event(afbitf->daemon, "stat");
+					event = afb_daemon_make_event("stat");
 					if (afb_event_is_valid(event)) {
-						rc = sd_event_add_io(afb_daemon_get_event_loop(afbitf->daemon), &src, fdt, EPOLLIN, emit, NULL);
+						rc = sd_event_add_io(afb_daemon_get_event_loop(), &src, fdt, EPOLLIN, emit, NULL);
 						if (rc >= 0) {
 							fd_proc = fdp;
 							fd_timer = fdt;
@@ -196,15 +197,15 @@ static int ensure_started()
 	return source == NULL ? start() : 0;
 }
 
-/***************************************************************************************/
-/***************************************************************************************/
-/**                                                                                   **/
-/**                                                                                   **/
-/**       SECTION: BINDING VERBS IMPLEMENTATION                                       **/
-/**                                                                                   **/
-/**                                                                                   **/
-/***************************************************************************************/
-/***************************************************************************************/
+/******************************************************************************/
+/******************************************************************************/
+/**                                                                          **/
+/**                                                                          **/
+/**       SECTION: BINDING VERBS IMPLEMENTATION                              **/
+/**                                                                          **/
+/**                                                                          **/
+/******************************************************************************/
+/******************************************************************************/
 
 /*
  * subscribe to notification of stat
@@ -240,33 +241,41 @@ static void unsubscribe(struct afb_req req)
 /*
  * array of the verbs exported to afb-daemon
  */
-static const struct afb_verb_desc_v1 binding_verbs[] = {
-  /* VERB'S NAME            SESSION MANAGEMENT          FUNCTION TO CALL         SHORT DESCRIPTION */
-  { .name= "subscribe",    .session= AFB_SESSION_NONE, .callback= subscribe,    .info= "subscribe to notification of statistics" },
-  { .name= "unsubscribe",  .session= AFB_SESSION_NONE, .callback= unsubscribe,  .info= "unsubscribe a previous subscription" },
-  { .name= NULL } /* marker for end of the array */
+static const struct afb_verb_v2 _afb_verbs_v2_stat[] = {
+	{
+		.verb = "subscribe",
+		.callback = subscribe,
+		.auth = NULL,
+		.info = "subscribes to the event of 'name'",
+		.session = AFB_SESSION_NONE_V2
+	},
+	{
+		.verb = "unsubscribe",
+		.callback = unsubscribe,
+		.auth = NULL,
+		.info = "unsubscribe to the event of 'name'",
+		.session = AFB_SESSION_NONE_V2
+	},
+	{
+		.verb = NULL,
+		.callback = NULL,
+		.auth = NULL,
+		.info = NULL,
+		.session = 0
+	}
 };
 
 /*
  * description of the binding for afb-daemon
  */
-static const struct afb_binding binding_description =
+const struct afb_binding_v2 afbBindingV2 =
 {
-  /* description conforms to VERSION 1 */
-  .type= AFB_BINDING_VERSION_1,
-  .v1= {			/* fills the v1 field of the union when AFB_BINDING_VERSION_1 */
-    .prefix= "stat",		/* the API name (or binding name or prefix) */
+	.api = "stat",
+	.specification = NULL,
     .info= "Get system statistics",	/* short description of of the binding */
-    .verbs = binding_verbs	/* the array describing the verbs of the API */
-  }
+	.verbs = _afb_verbs_v2_stat,
+	.preinit = NULL,
+	.init = NULL,
+	.onevent = NULL,
+	.noconcurrency = 0
 };
-
-/*
- * activation function for registering the binding called by afb-daemon
- */
-const struct afb_binding *afbBindingV1Register(const struct afb_binding_interface *itf)
-{
-	afbitf = itf;			/* records the interface for accessing afb-daemon */
-	return &binding_description;	/* returns the description of the binding */
-}
-

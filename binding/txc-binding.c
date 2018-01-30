@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2016 "IoT.bzh"
+ * Author José Bollo <jose.bollo@iot.bzh>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #define  _GNU_SOURCE
 
@@ -11,6 +27,7 @@
 
 #include <json-c/json.h>
 
+#define AFB_BINDING_VERSION 2
 #include <afb/afb-binding.h>
 
 struct signal {
@@ -18,7 +35,6 @@ struct signal {
 	struct afb_event event;
 };
 
-static const struct afb_binding_interface *afbitf;
 static int playing;
 static int stoping;
 
@@ -116,7 +132,7 @@ static void *play_traces(void *opaque)
 		info = "can't find filename";
 		goto end;
 	}
-	fd = afb_daemon_rootdir_open_locale(afbitf->daemon, json_object_get_string(object), O_RDONLY, NULL);
+	fd = afb_daemon_rootdir_open_locale(json_object_get_string(object), O_RDONLY, NULL);
 	if (fd < 0) {
 		info = "can't open the file";
 		goto end;
@@ -201,7 +217,7 @@ static void start(struct afb_req request)
 		afb_req_fail(request, "error", "argument 'filename' is missing");
 		return;
 	}
-	fd = afb_daemon_rootdir_open_locale(afbitf->daemon, json_object_get_string(a), O_RDONLY, NULL);
+	fd = afb_daemon_rootdir_open_locale(json_object_get_string(a), O_RDONLY, NULL);
 	if (fd < 0) {
 		afb_req_fail(request, "error", "argument 'filename' is not a readable file");
 		return;
@@ -246,7 +262,7 @@ static int subscribe_unsubscribe_sig(struct afb_req request, int subscribe, stru
 	if (!afb_event_is_valid(sig->event)) {
 		if (!subscribe)
 			return 1;
-		sig->event = afb_daemon_make_event(afbitf->daemon, sig->name);
+		sig->event = afb_daemon_make_event(sig->name);
 		if (!afb_event_is_valid(sig->event)) {
 			return 0;
 		}
@@ -326,26 +342,51 @@ static void unsubscribe(struct afb_req request)
 
 // NOTE: this sample does not use session to keep test a basic as possible
 //       in real application most APIs should be protected with AFB_SESSION_CHECK
-static const struct afb_verb_desc_v1 verbs[]= {
-  {"start",      AFB_SESSION_CHECK, start       , "start to play a trace"},
-  {"stop",       AFB_SESSION_CHECK, stop        , "stop to play a trace"},
-  {"subscribe",  AFB_SESSION_CHECK, subscribe   , "subscribes to the event of 'name'"},
-  {"unsubscribe",AFB_SESSION_CHECK, unsubscribe , "unsubscribes to the event of 'name'"},
-  {NULL}
-};
-
-static const struct afb_binding plugin_desc = {
-	.type = AFB_BINDING_VERSION_1,
-	.v1 = {
-		.info = "trace openXC service",
-		.prefix = "txc",
-		.verbs = verbs
+static const struct afb_verb_v2 _afb_verbs_v2_txc_demo[] = {
+	{
+		.verb = "start",
+		.callback = start,
+		.auth = NULL,
+		.info = "start to play a trace",
+		.session = AFB_SESSION_NONE_V2
+	},
+	{
+		.verb = "stop",
+		.callback = stop,
+		.auth = NULL,
+		.info = "stop to play a trace",
+		.session = AFB_SESSION_NONE_V2
+	},
+	{
+		.verb = "subscribe",
+		.callback = subscribe,
+		.auth = NULL,
+		.info = "subscribes to the event of 'name'",
+		.session = AFB_SESSION_NONE_V2
+	},
+	{
+		.verb = "unsubscribe",
+		.callback = unsubscribe,
+		.auth = NULL,
+		.info = "unsubscribe to the event of 'name'",
+		.session = AFB_SESSION_NONE_V2
+	},
+	{
+		.verb = NULL,
+		.callback = NULL,
+		.auth = NULL,
+		.info = NULL,
+		.session = 0
 	}
 };
 
-const struct afb_binding *afbBindingV1Register (const struct afb_binding_interface *itf)
-{
-	afbitf = itf;
-	return &plugin_desc;
-}
-
+const struct afb_binding_v2 afbBindingV2 = {
+	.api = "txc_demo",
+	.specification = NULL,
+	.info = "",
+	.verbs = _afb_verbs_v2_txc_demo,
+	.preinit = NULL,
+	.init = NULL,
+	.onevent = NULL,
+	.noconcurrency = 0
+};
