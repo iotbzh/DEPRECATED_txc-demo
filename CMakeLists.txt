@@ -81,6 +81,7 @@ file(GLOB_RECURSE HTML5FILES app/*)
 add_custom_command(
 	OUTPUT ${PROJECT_NAME}.wgt
 	DEPENDS txc-binding stat-binding config.xml.in ${HTML5FILES} bower.json gulpfile.js package.json
+	COMMAND yarn install
 	COMMAND rm -rf package
 	COMMAND mkdir -p package/${PROJECT_LIBDIR}
 	COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && gulp widget-config-prod && cp -a dist.prod ${CMAKE_CURRENT_BINARY_DIR}/package/htdocs
@@ -88,12 +89,13 @@ add_custom_command(
 	COMMAND mv package/htdocs/config.xml package/
 	COMMAND cp -a ${CMAKE_CURRENT_SOURCE_DIR}/data package/
 	COMMAND cp *.so package/${PROJECT_LIBDIR}
-	COMMAND wgtpkg-pack -f -o ${PROJECT_NAME}.wgt package 
+	COMMAND wgtpkg-pack -f -o ${PROJECT_NAME}.wgt package
 )
 
 add_custom_command(
 	OUTPUT ${PROJECT_NAME}-devel.wgt
 	DEPENDS txc-binding stat-binding config.xml.in ${HTML5FILES} bower.json gulpfile.js package.json
+	COMMAND yarn install
 	COMMAND rm -rf package
 	COMMAND mkdir -p package/${PROJECT_LIBDIR}
 	COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && gulp widget-config-dev && cp -a dist.dev ${CMAKE_CURRENT_BINARY_DIR}/package/htdocs
@@ -101,8 +103,7 @@ add_custom_command(
 	COMMAND mv package/htdocs/config.xml package/
 	COMMAND cp -a ${CMAKE_CURRENT_SOURCE_DIR}/data package/
 	COMMAND cp *.so package/${PROJECT_LIBDIR}
-	COMMAND wgtpkg-pack -f -o ${PROJECT_NAME}-devel.wgt package 
+	COMMAND wgtpkg-pack -f -o ${PROJECT_NAME}-devel.wgt package
 )
 
 add_custom_target(widget ALL DEPENDS ${PROJECT_NAME}.wgt ${PROJECT_NAME}-devel.wgt)
-
