@@ -17,6 +17,22 @@
 # limitations under the License.
 ###########################################################################
 
-cmake_minimum_required(VERSION 3.5)
+PROJECT_TARGET_ADD(txc-webui)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/../conf.d/cmake/bindings_config.cmake)
+file(GLOB_RECURSE HTML5FILES *)
+
+	# Define project Targets
+	add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/../dist.prod
+	DEPENDS ${TARGET_NAME} ../conf.d/wgt/webui_config.xml.in ${HTML5FILES} ../bower.json ../gulpfile.js ../package.json
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/..
+	COMMAND [ -d "dist.prod" ] || npm install
+	COMMAND [ -d "dist.prod" ] || gulp build-app-prod
+	COMMAND touch dist.prod
+	COMMAND cp -r dist.prod ${CMAKE_CURRENT_BINARY_DIR})
+
+	add_custom_target(${TARGET_NAME} ALL DEPENDS ${CMAKE_SOURCE_DIR}/../dist.prod)
+
+	# Binder exposes a unique public entry point
+	SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES
+		LABELS "HTDOCS"
+		OUTPUT_NAME dist.prod)

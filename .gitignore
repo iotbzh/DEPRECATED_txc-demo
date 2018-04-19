@@ -14,3 +14,4 @@ txc-demo.wgt
 dist.dev/
 dist.prod/
 package/
+*-apidef.h

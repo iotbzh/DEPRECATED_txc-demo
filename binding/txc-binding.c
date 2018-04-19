@@ -30,6 +30,8 @@
 #define AFB_BINDING_VERSION 2
 #include <afb/afb-binding.h>
 
+#include "txc-binding-apidef.h"
+
 struct signal {
 	const char *name;
 	struct afb_event event;
@@ -88,8 +90,10 @@ static void send_trace(const char *name, struct json_object *object)
 {
 	struct signal *sig = getsig(name);
 
-	if (sig && afb_event_is_valid(sig->event))
+	if (sig && afb_event_is_valid(sig->event)) {
+		AFB_NOTICE("Event push: %s", json_object_get_string(object));
 		afb_event_push(sig->event, json_object_get(object));
+	}
 }
 
 static void *play_traces(void *opaque)
@@ -205,7 +209,7 @@ end:
 }
 
 
-static void start(struct afb_req request)
+void start(struct afb_req request)
 {
 	struct json_object *args, *a;
 	int fd;
@@ -250,7 +254,7 @@ static void start(struct afb_req request)
 	afb_req_success(request, NULL, NULL);
 }
 
-static void stop(struct afb_req request)
+void stop(struct afb_req request)
 {
 	if (playing)
 		stoping = 1;
@@ -330,63 +334,12 @@ static void subscribe_unsubscribe(struct afb_req request, int subscribe)
 		afb_req_fail(request, "error", NULL);
 }
 
-static void subscribe(struct afb_req request)
+void subscribe(struct afb_req request)
 {
 	subscribe_unsubscribe(request, 1);
 }
 
-static void unsubscribe(struct afb_req request)
+void unsubscribe(struct afb_req request)
 {
 	subscribe_unsubscribe(request, 0);
 }
-
-// NOTE: this sample does not use session to keep test a basic as possible
-//       in real application most APIs should be protected with AFB_SESSION_CHECK
-static const struct afb_verb_v2 _afb_verbs_v2_txc[] = {
-	{
-		.verb = "start",
-		.callback = start,
-		.auth = NULL,
-		.info = "start to play a trace",
-		.session = AFB_SESSION_NONE_V2
-	},
-	{
-		.verb = "stop",
-		.callback = stop,
-		.auth = NULL,
-		.info = "stop to play a trace",
-		.session = AFB_SESSION_NONE_V2
-	},
-	{
-		.verb = "subscribe",
-		.callback = subscribe,
-		.auth = NULL,
-		.info = "subscribes to the event of 'name'",
-		.session = AFB_SESSION_NONE_V2
-	},
-	{
-		.verb = "unsubscribe",
-		.callback = unsubscribe,
-		.auth = NULL,
-		.info = "unsubscribe to the event of 'name'",
-		.session = AFB_SESSION_NONE_V2
-	},
-	{
-		.verb = NULL,
-		.callback = NULL,
-		.auth = NULL,
-		.info = NULL,
-		.session = 0
-	}
-};
-
-const struct afb_binding_v2 afbBindingV2 = {
-	.api = "txc",
-	.specification = NULL,
-	.info = "",
-	.verbs = _afb_verbs_v2_txc,
-	.preinit = NULL,
-	.init = NULL,
-	.onevent = NULL,
-	.noconcurrency = 0
-};

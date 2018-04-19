@@ -18,11 +18,11 @@
 
 # Project Info
 # ------------------
-set(PROJECT_NAME signal-composer-demo)
-set(PROJECT_PRETTY_NAME "Signal Composer demo")
-set(PROJECT_DESCRIPTION "AGL Signal Composer demo")
+set(PROJECT_NAME txc-webui)
+set(PROJECT_PRETTY_NAME "TXC HTML5 WebUI")
+set(PROJECT_DESCRIPTION "WebUI part of TXC demo for Signal Composer")
 set(PROJECT_URL "https://github.com/iotbzh/txc-demo/tree/signal-composer-input")
-set(PROJECT_ICON "icon.png")
+set(PROJECT_ICON "webui_icon.png")
 set(PROJECT_AUTHOR "Romain Forlot")
 set(PROJECT_AUTHOR_MAIL "romain.forlot@iot.bzh")
 set(PROJECT_LICENSE "APL2.0")
@@ -30,14 +30,10 @@ set(PROJECT_LANGUAGES "C")
 
 # Where are stored default templates files from submodule or subtree app-templates in your project tree
 # relative to the root project directory
-set(PROJECT_APP_TEMPLATES_DIR "conf.d/app-templates")
-
-# Where are stored your external libraries for your project. This is 3rd party library that you don't maintain
-# but used and must be built and linked.
-# set(PROJECT_LIBDIR "libs")
+set(PROJECT_APP_TEMPLATES_DIR "../conf.d/app-templates")
 
 # Which directories inspect to find CMakeLists.txt target files
-# set(PROJECT_SRC_DIR_PATTERN "*")
+ #set(PROJECT_SRC_DIR_PATTERN "*")
 
 # Compilation Mode (DEBUG, RELEASE)
 # ----------------------------------
@@ -60,16 +56,11 @@ set(USE_EFENCE 0)
 
 # Compiler selection if needed. Impose a minimal version.
 # -----------------------------------------------
-set (gcc_minimal_version 6)
+#set (gcc_minimal_version 6)
 
 # PKG_CONFIG required packages
 # -----------------------------
-set (PKG_REQUIRED_LIST
-	json-c
-	libsystemd>=222
-	afb-daemon
-	libmicrohttpd>=0.9.55
-)
+#set (PKG_REQUIRED_LIST)
 
 # Prefix path where will be installed the files
 # Default: /usr/local (need root permission to write in)
@@ -130,7 +121,7 @@ set(LD_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib64 ${CMAKE_INSTALL_PREFIX}/lib)
 # Optional location for config.xml.in
 # -----------------------------------
 #set(WIDGET_ICON "\"conf.d/wgt/${PROJECT_ICON}\"" CACHE PATH "Path to the widget icon")
-set(WIDGET_CONFIG_TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/conf.d/wgt/config.xml.in" CACHE PATH "Path to widget config file template (config.xml.in)")
+set(WIDGET_CONFIG_TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/../conf.d/wgt/webui_config.xml.in" CACHE PATH "Path to widget config file template (config.xml.in)")
 
 # Mandatory widget Mimetype specification of the main unit
 # --------------------------------------------------------------------------
@@ -180,7 +171,7 @@ set(WIDGET_ENTRY_POINT index.html)
 # and port use for remote debugging.
 #------------------------------------------------------------
 set(AFB_TOKEN   ""     CACHE PATH "Default binder security token")
-set(AFB_REMPORT "1234" CACHE PATH "Default binder listening port")
+set(AFB_REMPORT "1235" CACHE PATH "Default binder listening port")
 
 # Print a helper message when every thing is finished
 # ----------------------------------------------------

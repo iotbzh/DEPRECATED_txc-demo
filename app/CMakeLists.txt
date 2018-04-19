@@ -19,4 +19,4 @@
 
 cmake_minimum_required(VERSION 3.5)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/../conf.d/cmake/bindings_config.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../conf.d/cmake/webui_config.cmake)

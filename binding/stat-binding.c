@@ -33,8 +33,8 @@
 
 #define AFB_BINDING_VERSION 2
 #include <afb/afb-binding.h>
-#include <afb/afb-service-itf.h>
 
+#include "stat-binding-apidef.h"
 /*
  * the interface to afb-daemon
  */
@@ -210,7 +210,7 @@ static int ensure_started()
 /*
  * subscribe to notification of stat
  */
-static void subscribe(struct afb_req req)
+void subscribe(struct afb_req req)
 {
 	int rc;
 
@@ -231,51 +231,9 @@ static void subscribe(struct afb_req req)
  *
  *    id:   integer: the numeric identifier of the event as returned when subscribing
  */
-static void unsubscribe(struct afb_req req)
+void unsubscribe(struct afb_req req)
 {
 	if (afb_event_is_valid(event))
 		afb_req_unsubscribe(req, event);
 	afb_req_success(req, NULL, NULL);
 }
-
-/*
- * array of the verbs exported to afb-daemon
- */
-static const struct afb_verb_v2 _afb_verbs_v2_stat[] = {
-	{
-		.verb = "subscribe",
-		.callback = subscribe,
-		.auth = NULL,
-		.info = "subscribes to the event of 'name'",
-		.session = AFB_SESSION_NONE_V2
-	},
-	{
-		.verb = "unsubscribe",
-		.callback = unsubscribe,
-		.auth = NULL,
-		.info = "unsubscribe to the event of 'name'",
-		.session = AFB_SESSION_NONE_V2
-	},
-	{
-		.verb = NULL,
-		.callback = NULL,
-		.auth = NULL,
-		.info = NULL,
-		.session = 0
-	}
-};
-
-/*
- * description of the binding for afb-daemon
- */
-const struct afb_binding_v2 afbBindingV2 =
-{
-	.api = "stat",
-	.specification = NULL,
-    .info= "Get system statistics",	/* short description of of the binding */
-	.verbs = _afb_verbs_v2_stat,
-	.preinit = NULL,
-	.init = NULL,
-	.onevent = NULL,
-	.noconcurrency = 0
-};

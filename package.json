@@ -12,6 +12,9 @@
     "start": "node node_modules/.bin/gulp watch-dev"
   },
   "devDependencies": {
+    "bootstrap-sass": "~3",
+    "pngquant-bin": "*",
+    "imagemin-jpegtran": "*",
     "body-parser": "^1.5.2",
     "bower": "^1.3.1",
     "cookie-parser": "^1.4.0",
