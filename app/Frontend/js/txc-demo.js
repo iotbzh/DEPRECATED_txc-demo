@@ -11,7 +11,7 @@ var ws;
 var curLat,prvLat;
 var curLon,prvLon;
 var vspeed = 0, espeed = 0, torque = 0;
-var heading = 0;
+var curHea = 0;
 var R2D = 180.0 / Math.PI;
 var D2R = Math.PI / 180.0;
 var gapikey = "AIzaSyBG_RlEJr2i7zqJVQijKh4jQrE-DkeHau0";
@@ -169,30 +169,23 @@ function adjustCar() {
 	var zl=maps.mapsat.map.getZoom();
 	var scale=0.125*zl-1.375;
 	if (scale<0.5) scale=0.5;
-	var trans="scale("+scale+") translate(-50%,-68%) rotate("+heading+"deg)";
+	var trans="scale("+scale+") translate(-50%,-68%) rotate("+curHea+"deg)";
 	$(wdgCar).css("transform",trans);
-	//console.log("zoom:"+zl+" heading:"+heading+" scale:"+scale);
+	//console.log("zoom:"+zl+" heading:"+curHea+" scale:"+scale);
 }
 
 function updatePosition() {
-	if (curLat !== undefined && curLon !== undefined) {
-		if (prvLat !== undefined && prvLon !== undefined && vspeed >= minspeed) {
-			heading = Math.round(R2D * Math.atan2((curLon - prvLon)*Math.cos(D2R*curLat), curLat - prvLat));
-			wdgHea.innerHTML = String(heading);
-		}
+	wdgView1.src = src1+"&location="+curLat+","+curLon+"&heading="+curHea;
 
-		wdgView1.src = src1+"&location="+curLat+","+curLon+"&heading="+heading;
-
-		for (var id in maps) {
-			var mh=maps[id];
-			mh.map.panTo([curLat,curLon],{
-				animate:true,
-				duration: 1.0,
-				easeLinearity: 1
-			});
-			if (mh.path) {
-				mh.path.addLatLng([curLat,curLon]);
-			}
+	for (var id in maps) {
+		var mh=maps[id];
+		mh.map.panTo([curLat,curLon],{
+			animate:true,
+			duration: 1.0,
+			easeLinearity: 1
+		});
+		if (mh.path) {
+			mh.path.addLatLng([curLat,curLon]);
 		}
 	}
 }
@@ -348,25 +341,20 @@ function clearGauges() {
 	}
 }
 
-/* only update position when 2 coords have been received, whatever the order */
-var coordUpdated=false;
-
 function gotLatitude(obj) {
-	prvLat = curLat;
 	curLat = obj.data.value;
 	wdgLat.innerHTML = String(curLat);
-	if (coordUpdated)
-		updatePosition();
-	coordUpdated=!coordUpdated;
 }
 
 function gotLongitude(obj) {
-	prvLon = curLon;
 	curLon = obj.data.value;
 	wdgLon.innerHTML = String(curLon);
-	if (coordUpdated)
-		updatePosition();
-	coordUpdated=!coordUpdated;
+}
+
+function gotHeading(obj) {
+	curHea = obj.data.value;
+	wdgHea.innerHTML = String(curHea);
+	updatePosition();
 }
 
 function gotVehicleSpeed(obj) {
@@ -465,7 +453,7 @@ function gotStart(obj) {
 	prvLon = undefined;
 	vspeed = 0;
 	espeed = 0;
-	heading = 0;
+	curHea = 0;
 	odoini = undefined;
 	odo = undefined;
 	odoprv = undefined;
@@ -516,6 +504,9 @@ function gotAny(obj) {
 			break;
 		case "latitude":
 			gotLatitude(obj);
+			break;
+		case "heading":
+			gotHeading(obj);
 			break;
 		case "odometer":
 			gotOdometer(obj);
@@ -579,6 +570,7 @@ function onOpen() {
 			"fuel_consumed_since_restart",
 			"longitude",
 			"latitude",
+			"heading",
 			"odometer",
 			"vehicle_speed",
 			"torque_at_transmission"]}, onSubscribed, onAbort);
