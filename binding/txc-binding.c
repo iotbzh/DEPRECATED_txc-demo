@@ -91,7 +91,6 @@ static void send_trace(const char *name, struct json_object *object)
 	struct signal *sig = getsig(name);
 
 	if (sig && afb_event_is_valid(sig->event)) {
-		AFB_NOTICE("Event push: %s", json_object_get_string(object));
 		afb_event_push(sig->event, json_object_get(object));
 	}
 }
@@ -105,15 +104,14 @@ static void *play_traces(void *opaque)
 	char line[1024];
 	FILE *file = NULL;
 	const char *info;
-	const char *name;
 	double speed = 1.0;
 	int started = 0;
-	double init = 0.0;
-	double prev = 0.0;
-	double base = 0.0;
+	long double init = 0.0;
+	long double prev = 0.0;
+	long double base = 0.0;
+	long double t, i, f;
 	struct json_object *ots;
 	struct json_object *on;
-	double t, i, f;
 	int hasots;
 	int hason;
 	struct timespec ts;
@@ -164,24 +162,28 @@ static void *play_traces(void *opaque)
 				hason = json_object_object_get_ex(object, "name", &on);
 				hasots = json_object_object_get_ex(object, "timestamp", &ots);
 				if (hasots && hason) {
-					if (started)
+					if (started) {
 						t = speed * (json_object_get_double(ots) - init);
+						clock_gettime(CLOCK_REALTIME, &ts);
+					}
 					else {
 						init = json_object_get_double(ots);
 						started = 1;
 						clock_gettime(CLOCK_REALTIME, &ts);
-						base = (double)ts.tv_sec + ((double)ts.tv_nsec / 1000000000.0);
+						base = (long double)ts.tv_sec + ((long double)ts.tv_nsec / 1000000000.0);
 						t = 0;
 					}
-					json_object_object_add(object, "timestamp", json_object_new_double(t));
 
 					if (t > prev) {
-						f = modf(base + t, &i);
+						f = modfl(base + t, &i);
 						ts.tv_sec = (time_t)i;
 						ts.tv_nsec = (long)(1000000000.0 * f);
 						prev = t;
 						clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &ts, NULL);
 					}
+
+					t = t + (long double)ts.tv_sec + ((long double)ts.tv_nsec / 1000000000.0);
+					json_object_object_add(object, "timestamp", json_object_new_double(t));
 
 					send_trace(json_object_get_string(on), object);
 				}
@@ -307,7 +309,8 @@ static int subscribe_unsubscribe_name(struct afb_req request, int subscribe, con
 
 static void subscribe_unsubscribe(struct afb_req request, int subscribe)
 {
-	int ok, i, n;
+	int ok, i;
+	size_t n;
 	struct json_object *args, *a, *x;
 
 	/* makes the subscription/unsubscription */

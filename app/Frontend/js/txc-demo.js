@@ -500,8 +500,36 @@ function gotAny(obj) {
 		document.body.className = "started";
 		setMapsLockState(true);
 	}
+
+	switch(obj.data.uid) {
+		case "engine_speed":
+			gotEngineSpeed(obj);
+			break;
+		case "fuel_level":
+			gotFuelLevel(obj);
+			break;
+		case "fuel_consumed_since_restart":
+			gotFuelSince(obj);
+			break;
+		case "longitude":
+			gotLongitude(obj);
+			break;
+		case "latitude":
+			gotLatitude(obj);
+			break;
+		case "odometer":
+			gotOdometer(obj);
+			break;
+		case "vehicle_speed":
+			gotVehicleSpeed(obj);
+			break;
+		case "torque_at_transmission":
+			gotTorque(obj);
+			break;
+	}
+
 	msgcnt++;
-	updateClock(obj.data.timestamp);
+	updateClock(obj.data.timestamp / 1000000000);
 }
 
 function updateMsgRate() {
@@ -561,14 +589,6 @@ function onOpen() {
 function onSubscribed() {
 	document.body.className = "connected";
 	setMapsLockState(false);
-	ws.onevent("signal-composer/engine_speed", gotEngineSpeed);
-	ws.onevent("signal-composer/fuel_level", gotFuelLevel);
-	ws.onevent("signal-composer/fuel_consumed_since_restart", gotFuelSince);
-	ws.onevent("signal-composer/longitude", gotLongitude);
-	ws.onevent("signal-composer/latitude", gotLatitude);
-	ws.onevent("signal-composer/odometer", gotOdometer);
-	ws.onevent("signal-composer/vehicle_speed", gotVehicleSpeed);
-	ws.onevent("signal-composer/torque_at_transmission", gotTorque);
 	ws.onevent("signal-composer",gotAny);
 }
 
