@@ -187,7 +187,9 @@ static void *play_traces(void *opaque)
 
 					send_trace(json_object_get_string(on), object);
 				}
-				json_object_put(object);
+				else {
+					json_object_put(object);
+				}
 			}
 		}
 	}
