@@ -1,5 +1,5 @@
-
 #define  _GNU_SOURCE
+#define AFB_BINDING_VERSION 1
 
 #include <stdio.h>
 #include <string.h>

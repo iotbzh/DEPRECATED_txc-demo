@@ -16,6 +16,7 @@
  */
 
 #define _GNU_SOURCE
+#define AFB_BINDING_VERSION 1
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -32,7 +33,7 @@
 #include <systemd/sd-event.h>
 
 #include <afb/afb-binding.h>
-#include <afb/afb-service-itf.h>
+#include <afb/afb-service-itf-x1.h>
 
 /*
  * the interface to afb-daemon
