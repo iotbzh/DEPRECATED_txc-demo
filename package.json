@@ -25,7 +25,7 @@
     "gulp-empty": "^0.1.1",
     "gulp-htmlhint": "0.0.9",
     "gulp-htmlmin": "^1.0.0",
-    "gulp-imagemin": "*",
+    "gulp-imagemin": "2.4.0",
     "gulp-inject": "^1.1.1",
     "gulp-jshint": "^1.9.2",
     "gulp-livereload": "^3.7.0",
