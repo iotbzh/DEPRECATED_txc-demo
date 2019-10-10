@@ -2,7 +2,7 @@
 var urlParams={};
 location.search.substr(1).split("&").forEach(function(item) {
 	var k = item.split("=")[0];
-	var v = decodeURIComponent(item.split("=")[1]); 
+	var v = decodeURIComponent(item.split("=")[1]);
 	if (k in urlParams) urlParams[k].push(v); else urlParams[k] = [v];
 });
 
@@ -11,7 +11,7 @@ var ws;
 var curLat,prvLat;
 var curLon,prvLon;
 var vspeed = 0, espeed = 0, torque = 0;
-var heading = 0;
+var curHea = 0;
 var R2D = 180.0 / Math.PI;
 var D2R = Math.PI / 180.0;
 var gapikey = "AIzaSyBG_RlEJr2i7zqJVQijKh4jQrE-DkeHau0";
@@ -111,14 +111,14 @@ function initMaps() {
 		if (mh.events) {
 			for (var evt in mh.events) {
 				mh.map.on(evt,mh.events[evt]);
-	
+
 			}
 		}
 		if (mh.layersControl) {
 			L.control.layers(mh.layersControl).addTo(mh.map);
 		}
 		if (mh.path) {
-			mh.path=L.polyline([],mh.path); 
+			mh.path=L.polyline([],mh.path);
 			// TODO: use multicolor lines: https://github.com/hgoebl/Leaflet.MultiOptionsPolyline
 			mh.path.addTo(mh.map);
 		}
@@ -145,7 +145,7 @@ function setMapsLockState(b) {
 		else
 			maps[id].map.dragging.enable();
 	}
-	
+
 	// car visible or not
 	if (b) {
 		// lock state: car visible
@@ -161,41 +161,34 @@ function setMapsLockState(b) {
 
 function adjustCar() {
 	/* get zoom level on map and adjust scaling ! */
-	/* 
+	/*
 	  zoom => scale
-	   19 => 1.0 
-	   15 => 0.5 
+	   19 => 1.0
+	   15 => 0.5
 	*/
 	var zl=maps.mapsat.map.getZoom();
 	var scale=0.125*zl-1.375;
 	if (scale<0.5) scale=0.5;
-	var trans="scale("+scale+") translate(-50%,-68%) rotate("+heading+"deg)";
+	var trans="scale("+scale+") translate(-50%,-68%) rotate("+curHea+"deg)";
 	$(wdgCar).css("transform",trans);
-	//console.log("zoom:"+zl+" heading:"+heading+" scale:"+scale);
+	//console.log("zoom:"+zl+" heading:"+curHea+" scale:"+scale);
 }
 
 function updatePosition() {
-	if (curLat !== undefined && curLon !== undefined) {
-		if (prvLat !== undefined && prvLon !== undefined && vspeed >= minspeed) {
-			heading = Math.round(R2D * Math.atan2((curLon - prvLon)*Math.cos(D2R*curLat), curLat - prvLat));
-			wdgHea.innerHTML = String(heading);
-		}
+	wdgView1.src = src1+"&location="+curLat+","+curLon+"&heading="+curHea;
 
-		wdgView1.src = src1+"&location="+curLat+","+curLon+"&heading="+heading;
-
-		for (var id in maps) {
-			var mh=maps[id];
-			mh.map.panTo([curLat,curLon],{
-				animate:true,
-				duration: 1.0,
-				easeLinearity: 1
-			});
-			if (mh.path) {
-				mh.path.addLatLng([curLat,curLon]);
-			}
+	for (var id in maps) {
+		var mh=maps[id];
+		mh.map.panTo([curLat,curLon],{
+			animate:true,
+			duration: 1.0,
+			easeLinearity: 1
+		});
+		if (mh.path) {
+			mh.path.addLatLng([curLat,curLon]);
 		}
 	}
-} 
+}
 
 /* gauges creation */
 var gauges={};
@@ -271,7 +264,7 @@ function initGauges() {
 			0,
 			conscale,
 			[ 0, 8/conscale, 16/conscale, 26/conscale, 1],
-			[ 
+			[
 				new steelseries.rgbaColor(0, 255, 0, 1),
 				new steelseries.rgbaColor(255, 255, 0, 1),
 				new steelseries.rgbaColor(255, 128, 0, 1),
@@ -291,7 +284,7 @@ function initGauges() {
 		valuesNumeric: false,
 		value: "",
 	});
-	
+
 	gauges.torque = new steelseries.Radial('torqueGauge', {
 		gaugeType: steelseries.GaugeType.TYPE2,
 		frameDesign: steelseries.FrameDesign.BLACK_METAL,
@@ -348,25 +341,20 @@ function clearGauges() {
 	}
 }
 
-/* only update position when 2 coords have been received, whatever the order */
-var coordUpdated=false;
-
 function gotLatitude(obj) {
-	prvLat = curLat;
 	curLat = obj.data.value;
 	wdgLat.innerHTML = String(curLat);
-	if (coordUpdated)
-		updatePosition();
-	coordUpdated=!coordUpdated;
 }
 
 function gotLongitude(obj) {
-	prvLon = curLon;
 	curLon = obj.data.value;
 	wdgLon.innerHTML = String(curLon);
-	if (coordUpdated)
-		updatePosition();
-	coordUpdated=!coordUpdated;
+}
+
+function gotHeading(obj) {
+	curHea = obj.data.value;
+	wdgHea.innerHTML = String(curHea);
+	updatePosition();
 }
 
 function gotVehicleSpeed(obj) {
@@ -465,7 +453,7 @@ function gotStart(obj) {
 	prvLon = undefined;
 	vspeed = 0;
 	espeed = 0;
-	heading = 0;
+	curHea = 0;
 	odoini = undefined;
 	odo = undefined;
 	odoprv = undefined;
@@ -475,7 +463,7 @@ function gotStart(obj) {
 	cons = undefined;
 	consa = [ ];
 
-	wdgFsr.innerHTML = wdgOdo.innerHTML = wdgCon.innerHTML = 
+	wdgFsr.innerHTML = wdgOdo.innerHTML = wdgCon.innerHTML =
 	wdgClk.innerHTML = wdgLat.innerHTML = wdgLon.innerHTML =
 	wdgVsp.innerHTML = /*wdgVspeed.innerHTML = */
 	wdgEsp.innerHTML = /*wdgEspeed.innerHTML = */
@@ -495,13 +483,44 @@ function gotStop(obj) {
 var msgcnt=0;
 var msgprv=0;
 var msgprvts=0;
-function gotAny(obj) { 
-	if (obj.event != "txc/STOP") {
+function gotAny(obj) {
+	if (obj.event != "signal-composer/STOP") {
 		document.body.className = "started";
 		setMapsLockState(true);
 	}
+
+	switch(obj.data.uid) {
+		case "engine_speed":
+			gotEngineSpeed(obj);
+			break;
+		case "fuel_level":
+			gotFuelLevel(obj);
+			break;
+		case "fuel_consumed_since_restart":
+			gotFuelSince(obj);
+			break;
+		case "longitude":
+			gotLongitude(obj);
+			break;
+		case "latitude":
+			gotLatitude(obj);
+			break;
+		case "heading":
+			gotHeading(obj);
+			break;
+		case "odometer":
+			gotOdometer(obj);
+			break;
+		case "vehicle_speed":
+			gotVehicleSpeed(obj);
+			break;
+		case "torque_at_transmission":
+			gotTorque(obj);
+			break;
+	}
+
 	msgcnt++;
-	updateClock(obj.data.timestamp);
+	updateClock(obj.data.timestamp / 1000000000);
 }
 
 function updateMsgRate() {
@@ -530,7 +549,7 @@ function updateClock(ts) {
 		('0'+s).slice(-2)+"."+
 		Math.floor(ts*10)
 	;
-		
+
 	wdgClk.innerHTML=chrono;
 	gauges.clock.setValue(chrono+" ");
 }
@@ -545,17 +564,16 @@ function onAbort() {
 }
 
 function onOpen() {
-	ws.call("txc/subscribe", {event:[
+	ws.call("signal-composer/subscribe", {signal:[
 			"engine_speed",
 			"fuel_level",
 			"fuel_consumed_since_restart",
 			"longitude",
 			"latitude",
+			"heading",
 			"odometer",
 			"vehicle_speed",
-			"torque_at_transmission",
-			"START",
-			"STOP"]}, onSubscribed, onAbort);
+			"torque_at_transmission"]}, onSubscribed, onAbort);
 	ws.call("stat/subscribe", true);
 	ws.onevent("stat/stat", gotStat);
 }
@@ -563,17 +581,7 @@ function onOpen() {
 function onSubscribed() {
 	document.body.className = "connected";
 	setMapsLockState(false);
-	ws.onevent("txc/engine_speed", gotEngineSpeed);
-	ws.onevent("txc/fuel_level", gotFuelLevel);
-	ws.onevent("txc/fuel_consumed_since_restart", gotFuelSince);
-	ws.onevent("txc/longitude", gotLongitude);
-	ws.onevent("txc/latitude", gotLatitude);
-	ws.onevent("txc/odometer", gotOdometer);
-	ws.onevent("txc/vehicle_speed", gotVehicleSpeed);
-	ws.onevent("txc/torque_at_transmission", gotTorque);
-	ws.onevent("txc/START", gotStart);
-	ws.onevent("txc/STOP", gotStop);
-	ws.onevent("txc",gotAny);
+	ws.onevent("signal-composer",gotAny);
 }
 
 function replyok(obj) {
@@ -594,12 +602,9 @@ function doConnect() {
 	ws = new afb.ws(onOpen, onAbort);
 }
 
-function doStart(fname) {
-	ws.call('txc/start',{filename: fname});
-}
-
-function doStop() {
-	ws.call('txc/stop',true);
+function doDisconnect() {
+	document.body.className = "disconnecting";
+	ws = new afb.ws(onClose, onAbort);
 }
 
 $(function() {

@@ -32,7 +32,7 @@ var paths = {
 		frontend+'/**/*.jpeg',
 		frontend+'/**/*.svg',
 		frontend+'/**/*.ttf',
-		'bower_components/leaflet/dist/images/*.png'
+		'node_modules/leaflet/dist/images/*.png'
 	],
     index       : frontend+'/index.html',
     partials    : [frontend + '/**/*.html', '!' + frontend +'/index.html'],
@@ -40,9 +40,9 @@ var paths = {
     distProd    : './dist.prod',
     sass:  [
 		frontend+'/styles',
-		'bower_components/bootstrap-sass/assets/stylesheets'
+		'node_modules/bootstrap-sass/assets/stylesheets'
 	],
-    fonts: ['bower_components/**/*.woff'],
+    fonts: ['node_modules/**/*.woff'],
     favicon: frontend+'/images/favicon.ico',
 	wgtconfig: 'config.xml'
 };
@@ -56,7 +56,7 @@ paths['distAppDev']  = paths.distDev + config.URLBASE;
 paths['distAppProd'] = paths.distProd + config.URLBASE;
 
 // Run node in debug mode in developpement mode ?
-var nodeopts = config.DEBUG !== undefined ? '--debug='+config.DEBUG : ''; 
+var nodeopts = config.DEBUG !== undefined ? '--debug='+config.DEBUG : '';
 
 // == PIPE SEGMENTS ========
 var pipes = {};
@@ -97,7 +97,7 @@ pipes.builtAppScriptsProd = function() {
 
 pipes.builtVendorScriptsDev = function() {
     return gulp.src(bowerFiles('**/*.js'))
-        .pipe(gulp.dest( paths.distDev +'/bower_components'));
+        .pipe(gulp.dest( paths.distDev +'/node_modules'));
 };
 
 pipes.builtVendorScriptsProd = function() {
@@ -105,7 +105,7 @@ pipes.builtVendorScriptsProd = function() {
         .pipe(pipes.orderedVendorScripts())
         .pipe(plugins.concat('vendor.min.js'))
         .pipe(plugins.uglify())
-        .pipe(gulp.dest(paths.distProd+ '/bower_components'));
+        .pipe(gulp.dest(paths.distProd+ '/node_modules'));
 };
 
 
@@ -165,13 +165,13 @@ pipes.builtglobalStylesProd = function() {
 pipes.processedFontsDev = function() {
     return gulp.src(paths.fonts)
         .pipe(rename(function (path) {path.dirname="";return path;}))
-        .pipe(gulp.dest(paths.distDev+'/bower_components'));
+        .pipe(gulp.dest(paths.distDev+'/node_modules'));
 };
 
 pipes.processedFontsProd = function() {
     return gulp.src(paths.fonts)
         .pipe(rename(function (path) {path.dirname="";return path;}))
-        .pipe(gulp.dest(paths.distProd+'/bower_components'));
+        .pipe(gulp.dest(paths.distProd+'/node_modules'));
 };
 
 
@@ -212,7 +212,7 @@ pipes.createProdSymLink = function() {
 };
 
 pipes.validatedIndex = function() {
-    return gulp.src(paths.index)       
+    return gulp.src(paths.index)
         .pipe(plugins.replace('@@APPNAME@@', config.APPNAME))
         .pipe(plugins.replace('@@APPVER@@', config.APPVER))
         .pipe(plugins.replace('@@URLBASE@@', config.URLBASE))
@@ -271,7 +271,7 @@ pipes.builtAppProd = function() {
 pipes.widgetConfig = function(type) {
 	var dst=paths["dist"+type];
 	var content="."+config.URLBASE+"/index.html";
-	content=content.replace(/\/+/g,"/"); 
+	content=content.replace(/\/+/g,"/");
 	return gulp.src(paths.wgtconfig+".in")
         .pipe(plugins.replace('@@APPNAME@@', config.APPNAME))
         .pipe(plugins.replace('@@APPVER@@', config.APPVER))
@@ -310,9 +310,9 @@ pipes.doRsync=function(type) {
 
 // == TASKS ========
 
-// Add a task to render the output 
+// Add a task to render the output
 gulp.task('help', taskListing.withFilters(/-/));
-   
+
 // clean, build of production environement
 gulp.task('build', ['clean-build-app-prod']);
 
@@ -408,7 +408,7 @@ gulp.task('watch-dev', ['clean-build-app-dev'], function() {
 			.pipe(pipes.doRsync("Dev"))
             .pipe(plugins.livereload());
     });
-    
+
     // watch Images
     gulp.watch(paths.images, function() {
         return pipes.processedImagesDev()
@@ -453,7 +453,7 @@ gulp.task('watch-prod', ['clean-build-app-prod'], function() {
 			.pipe(pipes.doRsync("Prod"))
             .pipe(plugins.livereload());
     });
-    
+
     // watch Images
     gulp.watch(paths.images, function() {
         return pipes.processedImagesProd()
@@ -472,7 +472,7 @@ gulp.task('watch-prod', ['clean-build-app-prod'], function() {
 			.pipe(pipes.doRsync("Prod"))
             .pipe(plugins.livereload());
     });
-    
+
 });
 
 gulp.task('widget-config-dev',  ['build-app-dev'],  function() { return pipes.widgetConfig("Dev"); });

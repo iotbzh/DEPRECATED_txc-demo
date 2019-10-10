@@ -1,5 +1,21 @@
+/*
+ * Copyright (C) 2016 "IoT.bzh"
+ * Author José Bollo <jose.bollo@iot.bzh>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #define  _GNU_SOURCE
-#define AFB_BINDING_VERSION 1
 
 #include <stdio.h>
 #include <string.h>
@@ -11,14 +27,16 @@
 
 #include <json-c/json.h>
 
+#define AFB_BINDING_VERSION 2
 #include <afb/afb-binding.h>
+
+#include "txc-binding-apidef.h"
 
 struct signal {
 	const char *name;
 	struct afb_event event;
 };
 
-static const struct afb_binding_interface *afbitf;
 static int playing;
 static int stoping;
 
@@ -72,8 +90,9 @@ static void send_trace(const char *name, struct json_object *object)
 {
 	struct signal *sig = getsig(name);
 
-	if (sig && afb_event_is_valid(sig->event))
+	if (sig && afb_event_is_valid(sig->event)) {
 		afb_event_push(sig->event, json_object_get(object));
+	}
 }
 
 static void *play_traces(void *opaque)
@@ -85,15 +104,14 @@ static void *play_traces(void *opaque)
 	char line[1024];
 	FILE *file = NULL;
 	const char *info;
-	const char *name;
 	double speed = 1.0;
 	int started = 0;
-	double init = 0.0;
-	double prev = 0.0;
-	double base = 0.0;
+	long double init = 0.0;
+	long double prev = 0.0;
+	long double base = 0.0;
+	long double t, i, f;
 	struct json_object *ots;
 	struct json_object *on;
-	double t, i, f;
 	int hasots;
 	int hason;
 	struct timespec ts;
@@ -116,7 +134,7 @@ static void *play_traces(void *opaque)
 		info = "can't find filename";
 		goto end;
 	}
-	fd = afb_daemon_rootdir_open_locale(afbitf->daemon, json_object_get_string(object), O_RDONLY, NULL);
+	fd = afb_daemon_rootdir_open_locale(json_object_get_string(object), O_RDONLY, NULL);
 	if (fd < 0) {
 		info = "can't open the file";
 		goto end;
@@ -144,28 +162,34 @@ static void *play_traces(void *opaque)
 				hason = json_object_object_get_ex(object, "name", &on);
 				hasots = json_object_object_get_ex(object, "timestamp", &ots);
 				if (hasots && hason) {
-					if (started)
+					if (started) {
 						t = speed * (json_object_get_double(ots) - init);
+						clock_gettime(CLOCK_REALTIME, &ts);
+					}
 					else {
 						init = json_object_get_double(ots);
 						started = 1;
 						clock_gettime(CLOCK_REALTIME, &ts);
-						base = (double)ts.tv_sec + ((double)ts.tv_nsec / 1000000000.0);
+						base = (long double)ts.tv_sec + ((long double)ts.tv_nsec / 1000000000.0);
 						t = 0;
 					}
-					json_object_object_add(object, "timestamp", json_object_new_double(t));
 
 					if (t > prev) {
-						f = modf(base + t, &i);
+						f = modfl(base + t, &i);
 						ts.tv_sec = (time_t)i;
 						ts.tv_nsec = (long)(1000000000.0 * f);
 						prev = t;
 						clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &ts, NULL);
 					}
 
+					t = t + (long double)ts.tv_sec + ((long double)ts.tv_nsec / 1000000000.0);
+					json_object_object_add(object, "timestamp", json_object_new_double(t));
+
 					send_trace(json_object_get_string(on), object);
 				}
-				json_object_put(object);
+				else {
+					json_object_put(object);
+				}
 			}
 		}
 	}
@@ -189,7 +213,7 @@ end:
 }
 
 
-static void start(struct afb_req request)
+void start(struct afb_req request)
 {
 	struct json_object *args, *a;
 	int fd;
@@ -201,7 +225,7 @@ static void start(struct afb_req request)
 		afb_req_fail(request, "error", "argument 'filename' is missing");
 		return;
 	}
-	fd = afb_daemon_rootdir_open_locale(afbitf->daemon, json_object_get_string(a), O_RDONLY, NULL);
+	fd = afb_daemon_rootdir_open_locale(json_object_get_string(a), O_RDONLY, NULL);
 	if (fd < 0) {
 		afb_req_fail(request, "error", "argument 'filename' is not a readable file");
 		return;
@@ -234,7 +258,7 @@ static void start(struct afb_req request)
 	afb_req_success(request, NULL, NULL);
 }
 
-static void stop(struct afb_req request)
+void stop(struct afb_req request)
 {
 	if (playing)
 		stoping = 1;
@@ -246,7 +270,7 @@ static int subscribe_unsubscribe_sig(struct afb_req request, int subscribe, stru
 	if (!afb_event_is_valid(sig->event)) {
 		if (!subscribe)
 			return 1;
-		sig->event = afb_daemon_make_event(afbitf->daemon, sig->name);
+		sig->event = afb_daemon_make_event(sig->name);
 		if (!afb_event_is_valid(sig->event)) {
 			return 0;
 		}
@@ -287,7 +311,8 @@ static int subscribe_unsubscribe_name(struct afb_req request, int subscribe, con
 
 static void subscribe_unsubscribe(struct afb_req request, int subscribe)
 {
-	int ok, i, n;
+	int ok, i;
+	size_t n;
 	struct json_object *args, *a, *x;
 
 	/* makes the subscription/unsubscription */
@@ -314,38 +339,12 @@ static void subscribe_unsubscribe(struct afb_req request, int subscribe)
 		afb_req_fail(request, "error", NULL);
 }
 
-static void subscribe(struct afb_req request)
+void subscribe(struct afb_req request)
 {
 	subscribe_unsubscribe(request, 1);
 }
 
-static void unsubscribe(struct afb_req request)
+void unsubscribe(struct afb_req request)
 {
 	subscribe_unsubscribe(request, 0);
 }
-
-// NOTE: this sample does not use session to keep test a basic as possible
-//       in real application most APIs should be protected with AFB_SESSION_CHECK
-static const struct afb_verb_desc_v1 verbs[]= {
-  {"start",      AFB_SESSION_CHECK, start       , "start to play a trace"},
-  {"stop",       AFB_SESSION_CHECK, stop        , "stop to play a trace"},
-  {"subscribe",  AFB_SESSION_CHECK, subscribe   , "subscribes to the event of 'name'"},
-  {"unsubscribe",AFB_SESSION_CHECK, unsubscribe , "unsubscribes to the event of 'name'"},
-  {NULL}
-};
-
-static const struct afb_binding plugin_desc = {
-	.type = AFB_BINDING_VERSION_1,
-	.v1 = {
-		.info = "trace openXC service",
-		.prefix = "txc",
-		.verbs = verbs
-	}
-};
-
-const struct afb_binding *afbBindingV1Register (const struct afb_binding_interface *itf)
-{
-	afbitf = itf;
-	return &plugin_desc;
-}
-
