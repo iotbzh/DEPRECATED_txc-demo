@@ -2,7 +2,7 @@
 <widget xmlns="http://www.w3.org/ns/widgets" id="@PROJECT_NAME@" version="@PROJECT_VERSION@">
 	<name>@PROJECT_NAME@</name>
 	<icon src="@PROJECT_ICON@"/>
-	<content src="@WIDGET_ENTRY_POINT@" type="@WIDGET_TYPE@"/>
+	<content src="lib/afb-txc-binding.so" type="@WIDGET_TYPE@"/>
 	<description>@PROJECT_DESCRIPTION@</description>
 	<author>@PROJECT_AUTHOR@ &lt;@PROJECT_AUTHOR_MAIL@&gt;</author>
 	<license>@PROJECT_LICENSE@</license>
@@ -16,7 +16,7 @@
 		<param name="stat" value="ws" />
 	</feature>
 
-	<feature name="urn:AGL:widget:required-api">
+	<feature name="urn:AGL:widget:required-binding">
 		<param name="lib/afb-txc-binding.so" value="local" />
 		<param name="lib/afb-stat-binding.so" value="local" />
 	</feature>
