@@ -27,14 +27,14 @@
 
 #include <json-c/json.h>
 
-#define AFB_BINDING_VERSION 2
+#define AFB_BINDING_VERSION 3
 #include <afb/afb-binding.h>
 
 #include "txc-binding-apidef.h"
 
 struct signal {
 	const char *name;
-	struct afb_event event;
+	afb_event_t event;
 };
 
 static int playing;
@@ -134,7 +134,7 @@ static void *play_traces(void *opaque)
 		info = "can't find filename";
 		goto end;
 	}
-	fd = afb_daemon_rootdir_open_locale(json_object_get_string(object), O_RDONLY, NULL);
+	fd = afb_api_rootdir_open_locale(afbBindingV3root, json_object_get_string(object), O_RDONLY, NULL);
 	if (fd < 0) {
 		info = "can't open the file";
 		goto end;
@@ -213,7 +213,7 @@ end:
 }
 
 
-void start(struct afb_req request)
+void start(afb_req_t request)
 {
 	struct json_object *args, *a;
 	int fd;
@@ -225,7 +225,7 @@ void start(struct afb_req request)
 		afb_req_fail(request, "error", "argument 'filename' is missing");
 		return;
 	}
-	fd = afb_daemon_rootdir_open_locale(json_object_get_string(a), O_RDONLY, NULL);
+	fd = afb_api_rootdir_open_locale(afbBindingV3root, json_object_get_string(a), O_RDONLY, NULL);
 	if (fd < 0) {
 		afb_req_fail(request, "error", "argument 'filename' is not a readable file");
 		return;
@@ -258,19 +258,19 @@ void start(struct afb_req request)
 	afb_req_success(request, NULL, NULL);
 }
 
-void stop(struct afb_req request)
+void stop(afb_req_t request)
 {
 	if (playing)
 		stoping = 1;
 	afb_req_success(request, NULL, NULL);
 }
 
-static int subscribe_unsubscribe_sig(struct afb_req request, int subscribe, struct signal *sig)
+static int subscribe_unsubscribe_sig(afb_req_t request, int subscribe, struct signal *sig)
 {
 	if (!afb_event_is_valid(sig->event)) {
 		if (!subscribe)
 			return 1;
-		sig->event = afb_daemon_make_event(sig->name);
+		sig->event = afb_api_make_event(afbBindingV3root, sig->name);
 		if (!afb_event_is_valid(sig->event)) {
 			return 0;
 		}
@@ -283,7 +283,7 @@ static int subscribe_unsubscribe_sig(struct afb_req request, int subscribe, stru
 	return 1;
 }
 
-static int subscribe_unsubscribe_all(struct afb_req request, int subscribe)
+static int subscribe_unsubscribe_all(afb_req_t request, int subscribe)
 {
 	int i, n, e;
 
@@ -294,7 +294,7 @@ static int subscribe_unsubscribe_all(struct afb_req request, int subscribe)
 	return e == 0;
 }
 
-static int subscribe_unsubscribe_name(struct afb_req request, int subscribe, const char *name)
+static int subscribe_unsubscribe_name(afb_req_t request, int subscribe, const char *name)
 {
 	struct signal *sig;
 
@@ -309,7 +309,7 @@ static int subscribe_unsubscribe_name(struct afb_req request, int subscribe, con
 	return subscribe_unsubscribe_sig(request, subscribe, sig);
 }
 
-static void subscribe_unsubscribe(struct afb_req request, int subscribe)
+static void subscribe_unsubscribe(afb_req_t request, int subscribe)
 {
 	int ok, i;
 	size_t n;
@@ -339,12 +339,12 @@ static void subscribe_unsubscribe(struct afb_req request, int subscribe)
 		afb_req_fail(request, "error", NULL);
 }
 
-void subscribe(struct afb_req request)
+void subscribe(afb_req_t request)
 {
 	subscribe_unsubscribe(request, 1);
 }
 
-void unsubscribe(struct afb_req request)
+void unsubscribe(afb_req_t request)
 {
 	subscribe_unsubscribe(request, 0);
 }

@@ -31,7 +31,7 @@
 
 #include <systemd/sd-event.h>
 
-#define AFB_BINDING_VERSION 2
+#define AFB_BINDING_VERSION 3
 #include <afb/afb-binding.h>
 
 #include "stat-binding-apidef.h"
@@ -70,7 +70,7 @@ static struct sd_event_source *source = NULL;
 static struct status older;
 static struct status newer;
 static struct status diff;
-static struct afb_event event;
+static afb_event_t event;
 
 /******************************************************************************/
 /******************************************************************************/
@@ -111,12 +111,12 @@ static int read_status(int fd, struct status *s)
 static void stop()
 {
 	sd_event_source_unref(source);
-	afb_event_drop(event);
+	//afb_event_drop(event);
 	close(fd_timer);
 	close(fd_proc);
 	fd_timer = -1;
 	fd_proc = -1;
-	event.itf = NULL;
+	event->itf = NULL;
 	source = NULL;
 }
 
@@ -172,16 +172,16 @@ static int start()
 				ts.it_value.tv_nsec = 0;
 				rc = timerfd_settime(fdt, 0, &ts, NULL);
 				if (rc >= 0) {
-					event = afb_daemon_make_event("stat");
+					event = afb_api_make_event(afbBindingV3root, "stat");
 					if (afb_event_is_valid(event)) {
-						rc = sd_event_add_io(afb_daemon_get_event_loop(), &src, fdt, EPOLLIN, emit, NULL);
+						rc = sd_event_add_io(afb_api_get_event_loop(afbBindingV3root), &src, fdt, EPOLLIN, emit, NULL);
 						if (rc >= 0) {
 							fd_proc = fdp;
 							fd_timer = fdt;
 							source = src;
 							return 0;
 						}
-						afb_event_drop(event);
+						//afb_event_drop(event);
 					}
 				}
 				close(fdt);
@@ -210,7 +210,7 @@ static int ensure_started()
 /*
  * subscribe to notification of stat
  */
-void subscribe(struct afb_req req)
+void subscribe(afb_req_t req)
 {
 	int rc;
 
@@ -231,7 +231,7 @@ void subscribe(struct afb_req req)
  *
  *    id:   integer: the numeric identifier of the event as returned when subscribing
  */
-void unsubscribe(struct afb_req req)
+void unsubscribe(afb_req_t req)
 {
 	if (afb_event_is_valid(event))
 		afb_req_unsubscribe(req, event);
