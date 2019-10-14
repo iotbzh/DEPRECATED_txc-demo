@@ -6,4 +6,9 @@
 	<description>@PROJECT_DESCRIPTION@</description>
 	<author>@PROJECT_AUTHOR@ &lt;@PROJECT_AUTHOR_MAIL@&gt;</author>
 	<license>@PROJECT_LICENSE@</license>
+
+	<feature name="urn:AGL:widget:required-api">
+		<param name="signal-composer" value="ws" />
+        </feature>
+
 </widget>
