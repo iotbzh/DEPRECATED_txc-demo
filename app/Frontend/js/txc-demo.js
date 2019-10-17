@@ -126,7 +126,7 @@ function initMaps() {
 	adjustCar(); // initial call
 	setMapsLockState(false);
 
-	wdgView1.src = src1+"&location="+defaultLocation[0]+","+defaultLocation[1]+"&heading=210";
+	//wdgView1.src = src1+"&location="+defaultLocation[0]+","+defaultLocation[1]+"&heading=210";
 }
 
 function setMapsLockState(b) {
@@ -175,7 +175,7 @@ function adjustCar() {
 }
 
 function updatePosition() {
-	wdgView1.src = src1+"&location="+curLat+","+curLon+"&heading="+curHea;
+	//wdgView1.src = src1+"&location="+curLat+","+curLon+"&heading="+curHea;
 
 	for (var id in maps) {
 		var mh=maps[id];
