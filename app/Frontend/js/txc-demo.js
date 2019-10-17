@@ -199,10 +199,10 @@ function initGauges() {
 		backgroundColor: steelseries.BackgroundColor.CARBON,
 		size: 250,
 		titleString: "Speed",
-		unitString: "Km/h",
+		unitString: "kts",
 		lcdVisible: true,
 		niceScale: true,
-		maxValue: 200,
+		maxValue: 25,
 		maxMeasuredValue: 0,
 		maxMeasuredValueVisible: true,
 		thresholdVisible: false,
@@ -223,7 +223,7 @@ function initGauges() {
 		unitString: "x1000",
 		lcdVisible: false,
 		niceScale: true,
-		maxValue: 8,
+		maxValue: 3,
 		maxMeasuredValue: 0,
 		maxMeasuredValueVisible: false,
 		section: [
@@ -243,13 +243,13 @@ function initGauges() {
 		backgroundColor: steelseries.BackgroundColor.CARBON,
 		size: 200,
 		titleString: "Fuel Rate",
-		unitString: "L/100 Km",
+		unitString: "L/h",
 		lcdVisible: true,
 		lcdColor: steelseries.LcdColor.STANDARD,
 		lcdDecimals: 1,
 		niceScale: true,
 		minValue: 0,
-		maxValue: conscale,
+		maxValue: 500,
 		minMeasuredValue: 0,
 		maxMeasuredValue: conscale,
 		maxMeasuredValueVisible: true,
@@ -294,8 +294,8 @@ function initGauges() {
 		unitString: "Nm",
 		lcdVisible: false,
 		niceScale: true,
-		minValue: -500,
-		maxValue: 500,
+		minValue: -50000,
+		maxValue: 50000,
 		maxMeasuredValue: 0,
 		maxMeasuredValueVisible: false,
 		section: [
@@ -359,22 +359,22 @@ function gotHeading(obj) {
 
 function gotVehicleSpeed(obj) {
 	vspeed = Math.round(obj.data.value);
-	wdgVsp.innerHTML = /* wdgVspeed.innerHTML = */ String(vspeed);
+	wdgVsp.innerHTML = /* wdgVspeed.innerHTML = */ String(vspeed/6);
 	//gauges.speed.setValueAnimated(vspeed);
-	gauges.speed.setValue(vspeed);
+	gauges.speed.setValue(vspeed/6);
 }
 
 function gotTorque(obj) {
 	torque=Math.round(obj.data.value);
-	wdgTrq.innerHTML=String(torque);
-	gauges.torque.setValue(torque);
+	wdgTrq.innerHTML=String(torque*100);
+	gauges.torque.setValue(torque*100);
 }
 
 function gotEngineSpeed(obj) {
 	espeed = Math.round(obj.data.value);
-	wdgEsp.innerHTML = /* wdgEspeed.innerHTML = */ String(espeed);
+	wdgEsp.innerHTML = /* wdgEspeed.innerHTML = */ String(espeed/4);
 	//gauges.rpm.setValueAnimated(espeed/1000);
-	gauges.rpm.setValue(espeed/1000);
+	gauges.rpm.setValue(espeed/1000/4);
 }
 
 function gotFuelLevel(obj) {
