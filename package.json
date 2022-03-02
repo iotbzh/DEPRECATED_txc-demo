@@ -46,7 +46,7 @@
     "imagemin-jpegtran": "*",
     "imagemin-pngquant": "*",
     "jshint-stylish": "^1.0.0",
-    "karma": "^0.10",
+    "karma": "^6.3",
     "karma-junit-reporter": "^0.2.2",
     "main-bower-files": "^2.5.0",
     "method-override": "^2.1.2",
